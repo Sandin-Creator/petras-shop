@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Petras Shop</title>
 
-  <!-- Styles (order preserved) -->
+  <!-- Styles (external only) -->
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/components.css">
@@ -20,7 +20,7 @@
     <div class="container header-content">
       <h1 class="site-title">Petras Shop</h1>
       <nav class="site-nav" aria-label="Primary">
-        <a href="/login.html" class="nav-link">Admin</a>
+        <!-- Admin link will be injected below ONLY if already logged in as ADMIN -->
       </nav>
     </div>
   </header>
@@ -67,10 +67,10 @@
       </select>
 
       <!-- Toggles -->
-      <label style="display:inline-flex;gap:6px;align-items:center">
+      <label class="checkbox-inline">
         <input type="checkbox" id="onlySale" /> On sale
       </label>
-      <label style="display:inline-flex;gap:6px;align-items:center">
+      <label class="checkbox-inline">
         <input type="checkbox" id="inStock" /> In stock only
       </label>
 
@@ -80,7 +80,7 @@
     </form>
 
     <!-- Results meta -->
-    <p id="results-meta" class="price" aria-live="polite" aria-atomic="true" style="margin-top:-6px">
+    <p id="results-meta" class="price" aria-live="polite" aria-atomic="true">
       Loading products…
     </p>
 
@@ -90,13 +90,13 @@
     <!-- Product grid -->
     <section id="grid" class="product-grid" aria-label="Products"></section>
 
-    <div id="load-more-wrap" style="display:flex;justify-content:center;margin:16px 0">
+    <div id="load-more-wrap" class="center">
       <button id="loadMore" class="btn">Load more</button>
     </div>
 
     <!-- Empty state -->
     <template id="empty-state">
-      <div class="card" style="text-align:center">
+      <div class="card">
         <h4>No results</h4>
         <p class="price">Try adjusting filters or clearing your search.</p>
       </div>
@@ -120,7 +120,7 @@
     </div>
   </noscript>
 
-  <!-- Quick View Modal (must be outside <noscript>) -->
+  <!-- Quick View Modal -->
   <div id="quickview" class="modal" hidden aria-hidden="true">
     <div class="modal-backdrop" data-close></div>
     <div class="modal-dialog card" role="dialog" aria-modal="true" aria-labelledby="qv-title">
@@ -131,7 +131,27 @@
     </div>
   </div>
 
-  <!-- Load module first so it exposes globals used by quickview -->
+  <!-- Add Admin link only for logged-in admins -->
+  <script>
+    (async () => {
+      try {
+        const res = await fetch("/api/auth/me", { credentials: "include" });
+        const data = await res.json();
+        if (data?.user?.role === "ADMIN") {
+          const nav = document.querySelector(".site-nav");
+          if (nav) {
+            const a = document.createElement("a");
+            a.href = "/admin";
+            a.className = "nav-link";
+            a.textContent = "Admin";
+            nav.appendChild(a);
+          }
+        }
+      } catch {}
+    })();
+  </script>
+
+  <!-- App scripts -->
   <script type="module" src="/js/storefront/main.js"></script>
   <script src="/js/quickview.js" defer></script>
 </body>

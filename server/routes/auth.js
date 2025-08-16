@@ -4,13 +4,21 @@ const bcrypt = require("bcryptjs");
 const prisma = require("../lib/prisma");
 
 const ROLES = new Set(["ADMIN", "STAFF"]);
+const ACCESS_CODE = (process.env.ADMIN_ACCESS_CODE || "").trim();
 
 router.post("/login", async (req, res) => {
   try {
-    let { email, password } = req.body || {};
+    let { email, password, code } = req.body || {};
     email = typeof email === "string" ? email.trim().toLowerCase() : "";
     password = typeof password === "string" ? password : "";
-    if (!email || !password) return res.status(400).json({ error: "Email and password required" });
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password required" });
+    }
+    // extra owner code (if configured)
+    if (ACCESS_CODE && String(code || "").trim() !== ACCESS_CODE) {
+      return res.status(401).json({ error: "Invalid code" });
+    }
 
     const u = await prisma.user.findUnique({ where: { email } });
     if (!u?.passwordHash) return res.status(401).json({ error: "Invalid credentials" });
@@ -20,7 +28,7 @@ router.post("/login", async (req, res) => {
 
     const role = ROLES.has(u.role) ? u.role : "STAFF";
 
-    // Write both object and flat fields for middleware compatibility
+    // Store both object and flat fields (handy for middleware)
     req.session.user   = { id: u.id, email: u.email, role };
     req.session.userId = u.id;
     req.session.role   = role;

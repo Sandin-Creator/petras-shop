@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin · Petras Shop</title>
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    /* ---- ADMIN INTERACTION FIXES ---- */
+    /* kill any full-page decorative overlays from the theme on this page */
+    body.admin-page::before,
+    body.admin-page::after,
+    main.container::before,
+    main.container::after {
+      content: none !important;
+      display: none !important;
+      pointer-events: none !important;
+    }
+    /* absolutely nothing decorative should eat clicks */
+    body.admin-page *::before,
+    body.admin-page *::after {
+      pointer-events: none !important;
+    }
+    /* ensure admin UI sits above background layers */
+    main.container,
+    .adminbar,
+    .admin-grid,
+    .admin-grid .card {
+      position: relative;
+      z-index: 10;
+    }
+    /* avoid weird hitboxes from transforms/filters */
+    html, body.admin-page, main.container {
+      transform: none !important;
+      filter: none !important;
+    }
+    /* small layout helpers used by this page */
+    .form-row { display: flex; gap: 12px; }
+    .form-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .upload-row { display: flex; gap: 8px; align-items: center; }
+  </style>
+</head>
+
+<body class="admin-page">
+  <main class="container" role="main">
+    <!-- Top bar -->
+    <header class="adminbar">
+      <h1 style="margin:0">Admin Dashboard</h1>
+      <div style="display:flex; gap:10px; align-items:center">
+        <a class="btn" href="/">↩ Back to store</a>
+        <button id="logout" class="btn btn-accent" type="button">Logout</button>
+      </div>
+    </header>
+
+    <section class="admin-grid" aria-label="Admin tools">
+      <!-- Create product form -->
+      <form id="createForm" class="card" novalidate aria-labelledby="new-title">
+        <h2 id="new-title" style="margin-top:0">New Product</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="newName">Name</label>
+            <input name="name" id="newName" placeholder="Name" required />
+          </div>
+          <div class="form-group">
+            <label for="newSlug">Slug</label>
+            <input name="slug" id="newSlug" placeholder="unique-product-slug" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="newPrice">Price (€)</label>
+            <input name="price" id="newPrice" type="number" step="0.01" min="0" placeholder="0.00" required />
+          </div>
+          <div class="form-group">
+            <label for="newOldPrice">Sale Price (€)</label>
+            <input name="oldPrice" id="newOldPrice" type="number" step="0.01" min="0" placeholder="0.00" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="newCategory">Category</label>
+            <select name="category" id="newCategory">
+              <option value="">— No category —</option>
+              <option value="clothes">Clothes</option>
+              <option value="shoes">Shoes</option>
+              <option value="accessories">Accessories</option>
+              <option value="electronics">Electronics</option>
+              <option value="perfume">Perfume</option>
+              <option value="cosmetics">Cosmetics</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="newStock">Stock</label>
+            <input name="stock" id="newStock" type="number" min="0" placeholder="0" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="imageUrl">Image URL</label>
+          <input name="imageUrl" id="imageUrl" placeholder="https://…" />
+        </div>
+
+        <div class="form-group">
+          <label for="imageFile">Upload image</label>
+          <div class="upload-row">
+            <input type="file" id="imageFile" accept="image/*" />
+            <button type="button" id="uploadBtn" class="btn">Upload</button>
+          </div>
+        </div>
+
+        <progress id="uploadProgress" max="100" value="0" style="width:100%; display:none"></progress>
+        <p id="uploadStatus" class="price" aria-live="polite" aria-atomic="true"></p>
+
+        <div id="preview" style="margin:8px 0;"></div>
+
+        <button type="submit" class="btn btn-accent" style="margin-top:10px">Create</button>
+        <p id="formStatus" class="price" aria-live="polite" aria-atomic="true"></p>
+      </form>
+
+      <!-- Product list + tools -->
+      <div class="card" aria-labelledby="products-title">
+        <h2 id="products-title" style="margin-top:0">Products</h2>
+
+        <div class="filters" style="margin:8px 0">
+          <label class="sr-only" for="adminSearch">Search by name</label>
+          <input id="adminSearch" placeholder="Search name…" />
+
+          <label class="sr-only" for="adminSort">Sort</label>
+          <select id="adminSort">
+            <option value="new">Newest</option>
+            <option value="name-asc">Name A–Z</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+          </select>
+        </div>
+
+        <p id="listMeta" class="price" aria-live="polite" aria-atomic="true">Loading…</p>
+        <div id="adminList" role="list"></div>
+
+        <template id="admin-empty">
+          <div class="row" role="listitem" style="justify-content:center; text-align:center">
+            <div>
+              <strong>No products found.</strong>
+              <div class="price">Try changing the search or sort.</div>
+            </div>
+          </div>
+        </template>
+
+        <template id="admin-row">
+          <div class="row" role="listitem" data-id="">
+            <div style="display:flex; gap:10px; align-items:center">
+              <img alt="" width="48" height="48" style="border-radius:10px; object-fit:cover" />
+              <div>
+                <div class="name" style="font-weight:700"></div>
+                <div class="price" style="font-size:12px"></div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px">
+              <button class="btn edit">Edit</button>
+              <button class="btn" data-action="stock">Stock − / +</button>
+              <button class="btn" data-action="hide">Hide</button>
+              <button class="btn btn-accent delete">Delete</button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </section>
+  </main>
+
+  <noscript>
+    <div class="container"><p>Please enable JavaScript to use the admin tools.</p></div>
+  </noscript>
+
+  <!-- If your file lives at /admin.js instead of /js/admin.js, change the path accordingly -->
+  <script type="module" src="/js/admin/main.js"></script>
+</body>
+</html>

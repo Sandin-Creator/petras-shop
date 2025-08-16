@@ -1,0 +1,98 @@
+/* === Admin Interaction Hardening (scoped to admin page) === */
+body.admin-page *::before,
+body.admin-page *::after {
+  /* Decorative pseudo-elements must never eat clicks */
+  pointer-events: none !important;
+}
+
+/* If your theme draws backgrounds on container/body via ::before/::after,
+   suppress them only on the admin page */
+body.admin-page::before,
+body.admin-page::after,
+body.admin-page main.container::before,
+body.admin-page main.container::after {
+  content: none !important;
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* Put admin UI above any background layers */
+body.admin-page main.container,
+body.admin-page .adminbar,
+body.admin-page .admin-grid,
+body.admin-page .admin-grid .card,
+body.admin-page #adminList {
+  position: relative;
+  z-index: 10;
+}
+
+/* Prevent weird hitboxes from transforms/filters on ancestors */
+html,
+body.admin-page,
+body.admin-page main.container {
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Create a clean stacking context for admin content */
+body.admin-page main.container { isolation: isolate; }
+
+/* --- Optional: make sure interactive children accept clicks --- */
+body.admin-page .card,
+body.admin-page .card * {
+  pointer-events: auto;
+}
+
+/* === Admin Layout === */
+.adminbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+
+.admin-grid {
+  display:grid; grid-template-columns:360px 1fr; gap:24px; align-items:start;
+}
+.admin-grid > .card { height:100%; }
+
+.row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:14px; border-bottom:1px dashed var(--glass-ring);
+}
+
+/* === Admin Form (New Product) === */
+.form-row { display:flex; gap:12px; }
+.form-group { flex:1; display:flex; flex-direction:column; gap:6px; }
+
+.card input[type="text"],
+.card input[type="number"],
+.card input[type="url"],
+.card input[type="file"],
+.card select,
+.card textarea {
+  width:100%; padding:10px 12px;
+  border-radius:12px; border:1px solid var(--glass-ring);
+  background:#fff; color:var(--ink);
+  outline:0; transition:box-shadow .2s, border-color .2s, transform .12s;
+}
+
+.card input:focus,
+.card select:focus,
+.card textarea:focus {
+  border-color:rgba(255,143,179,.6);
+  box-shadow:0 0 0 4px rgba(255,143,179,.18);
+}
+
+.upload-row { display:flex; gap:8px; align-items:center; }
+
+/* Progress + status */
+progress {
+  appearance:none; height:10px; border-radius:999px; overflow:hidden;
+  background:var(--rose-100); border:1px solid var(--glass-ring);
+}
+progress::-webkit-progress-bar { background:var(--rose-100); }
+progress::-webkit-progress-value { background:var(--grad); }
+progress::-moz-progress-bar { background:var(--grad); }
+
+/* Responsive */
+@media (max-width:720px){
+  .admin-grid { grid-template-columns:1fr; }
+  .site-title::after { width:72%; }
+  .form-row { flex-direction:column; }
+}

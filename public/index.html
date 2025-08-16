@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Petras Shop</title>
+
+  <!-- Styles (order preserved) -->
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <a class="sr-only sr-only-focusable" href="#main">Skip to content</a>
+
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="container header-content">
+      <h1 class="site-title">Petras Shop</h1>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="/login.html" class="nav-link">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="container" aria-labelledby="hero-title">
+    <div class="hero card">
+      <h2 id="hero-title">Blooming new arrivals</h2>
+      <p>Soft tones, comfy cuts, and everyday essentials.</p>
+      <a href="#grid" class="btn btn-accent">Shop now</a>
+    </div>
+  </section>
+
+  <!-- Main -->
+  <main id="main" class="container" role="main">
+    <!-- Filters -->
+    <form class="filters" role="search" aria-label="Product filters" onsubmit="return false">
+      <label class="sr-only" for="q">Search products</label>
+      <input id="q" name="q" type="text" class="filter-input" placeholder="Search..." autocomplete="off" />
+
+      <label class="sr-only" for="category">Category</label>
+      <select id="category" name="category" class="filter-select" aria-label="Category">
+        <option value="">All categories</option>
+        <option value="clothes">Clothes</option>
+        <option value="shoes">Shoes</option>
+        <option value="accessories">Accessories</option>
+        <option value="electronics">Electronics</option>
+        <option value="perfume">Perfume</option>
+        <option value="cosmetics">Cosmetics</option>
+      </select>
+
+      <label class="sr-only" for="min">Minimum price</label>
+      <input id="min" name="min" type="number" class="filter-input" placeholder="Min €" inputmode="decimal" min="0" />
+
+      <label class="sr-only" for="max">Maximum price</label>
+      <input id="max" name="max" type="number" class="filter-input" placeholder="Max €" inputmode="decimal" min="0" />
+
+      <label class="sr-only" for="sort">Sort</label>
+      <select id="sort" name="sort" class="filter-select" aria-label="Sort">
+        <option value="new">Newest</option>
+        <option value="price-asc">Price ↑</option>
+        <option value="price-desc">Price ↓</option>
+        <option value="discount-desc">Biggest discount</option>
+      </select>
+
+      <!-- Toggles -->
+      <label style="display:inline-flex;gap:6px;align-items:center">
+        <input type="checkbox" id="onlySale" /> On sale
+      </label>
+      <label style="display:inline-flex;gap:6px;align-items:center">
+        <input type="checkbox" id="inStock" /> In stock only
+      </label>
+
+      <!-- View density + Reset -->
+      <button id="densityToggle" type="button" class="btn" title="Toggle compact view">Compact view</button>
+      <button id="clearFilters" type="button" class="btn">Clear all</button>
+    </form>
+
+    <!-- Results meta -->
+    <p id="results-meta" class="price" aria-live="polite" aria-atomic="true" style="margin-top:-6px">
+      Loading products…
+    </p>
+
+    <!-- Active filter chips -->
+    <div id="active-filters" class="active-filters" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Product grid -->
+    <section id="grid" class="product-grid" aria-label="Products"></section>
+
+    <div id="load-more-wrap" style="display:flex;justify-content:center;margin:16px 0">
+      <button id="loadMore" class="btn">Load more</button>
+    </div>
+
+    <!-- Empty state -->
+    <template id="empty-state">
+      <div class="card" style="text-align:center">
+        <h4>No results</h4>
+        <p class="price">Try adjusting filters or clearing your search.</p>
+      </div>
+    </template>
+
+    <!-- Optional card template -->
+    <template id="product-card">
+      <article class="card" data-badge="">
+        <img alt="" />
+        <h4></h4>
+        <p class="price"></p>
+        <a class="btn">View</a>
+      </article>
+    </template>
+  </main>
+
+  <!-- No-JS notice -->
+  <noscript>
+    <div class="container">
+      <p>Please enable JavaScript to browse products.</p>
+    </div>
+  </noscript>
+
+  <!-- Quick View Modal (must be outside <noscript>) -->
+  <div id="quickview" class="modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-dialog card" role="dialog" aria-modal="true" aria-labelledby="qv-title">
+      <button class="modal-close btn" type="button" data-close aria-label="Close">×</button>
+      <div id="qv-body">
+        <p class="price">Loading…</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load module first so it exposes globals used by quickview -->
+  <script type="module" src="/js/storefront/main.js"></script>
+  <script src="/js/quickview.js" defer></script>
+</body>
+</html>

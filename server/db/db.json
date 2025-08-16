@@ -1,0 +1,42 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@shop.com",
+      "passwordHash": "$2a$10$XBS82hDKCCV1aXBTmCOvwOlTvP9ePrYf.eA9tdc6G.tGzvXFunRwK",
+      "role": "ADMIN"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Basic Tee",
+      "slug": "basic-tee",
+      "price": 1999,
+      "category": "clothes",
+      "imageUrl": "/images/tee.jpg",
+      "stock": 12,
+      "createdAt": 1723590000000
+    },
+    {
+      "id": 2,
+      "name": "Running Shoes",
+      "slug": "running-shoes",
+      "price": 6999,
+      "category": "shoes",
+      "imageUrl": "/images/shoes.jpg",
+      "stock": 5,
+      "createdAt": 1723680000000
+    },
+    {
+      "name": "coffy",
+      "slug": "coffy beans",
+      "price": 99,
+      "category": "accessories",
+      "imageUrl": "",
+      "stock": 10,
+      "id": 3,
+      "createdAt": 1755192420205
+    }
+  ]
+}

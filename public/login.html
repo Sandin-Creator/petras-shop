@@ -6,22 +6,27 @@
   <meta name="robots" content="noindex,nofollow" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Styles (external only) -->
+  <!-- external styles only -->
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/utilities.css">
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
-<body>
+
+<body class="login-page">
   <main class="container">
     <h2>Admin Login</h2>
-    <form id="loginForm" autocomplete="on" class="card">
+
+    <form id="loginForm" class="card" autocomplete="on">
       <label for="email">Email</label>
       <input id="email" name="email" type="email" placeholder="Email" autocomplete="username" required />
 
       <label for="password">Password</label>
-      <input id="password" name="password" type="password" placeholder="Password" autocomplete="current-password" required />
+      <div class="input-with-button">
+        <input id="password" name="password" type="password" placeholder="Password" autocomplete="current-password" required />
+        <button type="button" id="togglePwd" class="btn btn-ghost" aria-pressed="false" aria-label="Show password">Show</button>
+      </div>
 
       <label for="code">Code</label>
       <input id="code" name="code" type="password" placeholder="Owner code" autocomplete="one-time-code" required />
@@ -32,29 +37,43 @@
   </main>
 
   <script>
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const msg = document.getElementById("msg");
-    msg.textContent = "";
-
-    const email = document.getElementById("email").value.trim().toLowerCase();
-    const password = document.getElementById("password").value;
-    const code = document.getElementById("code").value.trim();
-
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email, password, code })
+    // Show/Hide password
+    (function () {
+      const pwd = document.getElementById("password");
+      const btn = document.getElementById("togglePwd");
+      btn.addEventListener("click", () => {
+        const show = pwd.type === "password";
+        pwd.type = show ? "text" : "password";
+        btn.textContent = show ? "Hide" : "Show";
+        btn.setAttribute("aria-pressed", String(show));
+        btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.ok) throw new Error(data.error || "Login failed");
-      location.href = "/admin";
-    } catch (err) {
-      msg.textContent = err.message || "Login failed";
-    }
-  });
+    })();
+
+    // Submit with owner code
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("msg");
+      msg.textContent = "";
+
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      const code = document.getElementById("code").value.trim();
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email, password, code })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.ok) throw new Error(data.error || "Invalid credentials");
+        location.href = "/admin";
+      } catch (err) {
+        msg.textContent = err.message || "Login failed";
+      }
+    });
   </script>
 </body>
 </html>

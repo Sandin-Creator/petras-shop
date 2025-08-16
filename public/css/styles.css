@@ -270,20 +270,17 @@ a.sr-only-focusable:focus {
   border-radius: 999px;
 }
 
-/* Helpers used by index/login */
+/* ---------- Shared helpers (index/login) ---------- */
 .checkbox-inline {
   display: inline-flex;
   gap: 6px;
   align-items: center;
 }
-
 .center {
   display: flex;
   justify-content: center;
   margin: 16px 0;
 }
-
-/* Optional: base sr-only (if not already in utilities.css) */
 .sr-only {
   position: absolute !important;
   width: 1px; height: 1px;
@@ -291,12 +288,34 @@ a.sr-only-focusable:focus {
   overflow: hidden; clip: rect(0,0,0,0);
   white-space: nowrap; border: 0;
 }
-
-/* Optional: tidy login form spacing without inline styles */
 form.card label { display: block; margin: .5rem 0 .25rem; }
 form.card input { width: 100%; }
 form.card .btn, form.card button { margin-top: .5rem; }
 
+/* ---------- Login page fixes ---------- */
+body.login-page::before,
+body.login-page::after,
+body.login-page .modal-backdrop,
+body.login-page .site-bg,
+body.login-page .page-bg,
+body.login-page .bg,
+body.login-page .backdrop {
+  pointer-events: none !important;   /* background layers won't block clicks */
+}
+body.login-page main {
+  position: relative;
+  z-index: 2;
+}
+.input-with-button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.input-with-button input { flex: 1; }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--glass-ring);
+}
 
 /* Tighter on small screens: actions under info */
 @media (max-width: 560px) {

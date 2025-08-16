@@ -1,27 +1,46 @@
+// server/routes/upload.js
 const router = require("express").Router();
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 const requireAdmin = require("../middleware/requireAdmin");
 
-// storage to /public/uploads, keep original name with timestamp prefix
+// /public/uploads (ensure it exists)
 const uploadsDir = path.join(__dirname, "..", "..", "public", "uploads");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+fs.mkdirSync(uploadsDir, { recursive: true });
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadsDir),
   filename: (_req, file, cb) => {
-    const ts = Date.now();
-    const safe = file.originalname.replace(/\s+/g, "_");
-    cb(null, `${ts}-${safe}`);
-  }
+    const ext = path.extname(file.originalname).toLowerCase();
+    const base = path
+      .basename(file.originalname, ext)
+      .replace(/[^a-z0-9\-]+/gi, "-")
+      .toLowerCase();
+    cb(null, `${Date.now()}-${base}${ext}`);
+  },
 });
-const upload = multer({ storage });
 
-router.post("/", requireAdmin, upload.single("image"), (req, res) => {
-  // public URL to save into product.imageUrl
-  const url = `/uploads/${req.file.filename}`;
-  res.json({ url });
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
+
+// Accepts field "file" (new) OR "image" (old)
+router.post(
+  "/",
+  requireAdmin,
+  upload.fields([{ name: "file", maxCount: 1 }, { name: "image", maxCount: 1 }]),
+  (req, res) => {
+    const f =
+      (req.files?.file && req.files.file[0]) ||
+      (req.files?.image && req.files.image[0]);
+
+    if (!f) return res.status(400).json({ error: "No file uploaded" });
+
+    const url = `/uploads/${f.filename}`; // public URL to store in product.imageUrl
+    return res.json({ url });
+  }
+);
 
 module.exports = router;

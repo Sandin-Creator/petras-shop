@@ -29,11 +29,9 @@ const useMemory = (process.env.SESSION_STORE || "").toLowerCase() === "memory";
 const sessPath = path.join(__dirname, ".sessions");
 if (!useMemory) fs.mkdirSync(sessPath, { recursive: true });
 
-const store = useMemory ? new session.MemoryStore() : new FileStore({
-  path: sessPath,
-  reapInterval: 60,
-  retries: 1,
-});
+const store = useMemory
+  ? new session.MemoryStore()
+  : new FileStore({ path: sessPath, reapInterval: 60, retries: 1 });
 
 app.use(
   session({
@@ -67,12 +65,13 @@ app.get("/login", (req, res) => {
       ? res.status(404).sendFile(notFound)
       : res.status(404).send("Not found");
   }
-  return res.sendFile(path.join(publicDir, "login", "index.html"));
+  // NOTE: serve single-file login page
+  return res.sendFile(path.join(publicDir, "login.html"));
 });
 
 // Optional short link: /<key> -> /login?k=<key>
 if (ADMIN_LOGIN_KEY) {
-  app.get(`/${ADMIN_LOGIN_KEY}`, (req, res) => {
+  app.get(`/${ADMIN_LOGIN_KEY}`, (_req, res) => {
     res.redirect(`/login?k=${encodeURIComponent(ADMIN_LOGIN_KEY)}`);
   });
 }
@@ -84,12 +83,12 @@ app.use("/admin", (req, res, next) => {
   next();
 });
 app.use("/admin", requireAdmin, express.static(adminDir));
-app.get("/admin", requireAdmin, (_, res) => {
+app.get("/admin", requireAdmin, (_req, res) => {
   res.sendFile(path.join(adminDir, "index.html"));
 });
 
 /* -------------------- API routes -------------------- */
-app.use("/api/upload", require("./routes/upload"));      // adjust to './routes/uploads' if your file is plural
+app.use("/api/upload", require("./routes/upload")); // your file is routes/upload.js
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/products", require("./routes/products"));
 
@@ -97,13 +96,13 @@ app.use("/api/products", require("./routes/products"));
 app.use(express.static(publicDir, { extensions: ["html"] }));
 
 // Root (storefront)
-app.get("/", (_, res) => {
+app.get("/", (_req, res) => {
   res.sendFile(path.join(publicDir, "index.html"));
 });
 
 /* -------------------- Errors -------------------- */
-app.use((req, res) => res.status(404).json({ error: "Not found" }));
-app.use((err, req, res, _next) => {
+app.use((_req, res) => res.status(404).json({ error: "Not found" }));
+app.use((err, _req, res, _next) => {
   console.error(err);
   res.status(500).json({ error: "Server error" });
 });

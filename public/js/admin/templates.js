@@ -81,18 +81,30 @@ export function rowEditor(p) {
         </div>
 
         <select name="category">${catOpts}</select>
-        <input name="imageUrl" value="${p.imageUrl || ""}" placeholder="Image URL" />
+
+        <!-- ⤵ add id so main.js can set after upload -->
+        <input id="imgUrl-${p.id}" name="imageUrl" value="${p.imageUrl || ""}" placeholder="Image URL" />
+
         <input name="stock" type="number" value="${p.stock || 0}" placeholder="Stock" />
       </div>
 
-      <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-        <img src="${imgSrc}" alt="${p.name}"
-             style="max-width:100px;border-radius:6px;object-fit:cover"
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap">
+        <!-- preview with stable id -->
+        <img id="imgPreview-${p.id}" src="${imgSrc}" alt="${p.name}"
+             style="max-width:120px;border-radius:6px;object-fit:cover"
              onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
+
+        <!-- inline upload controls -->
+        <div class="upload-inline" style="display:flex;align-items:center;gap:8px">
+          <input type="file" id="editFile-${p.id}" accept="image/*" />
+          <button class="btn" id="editUpload-${p.id}">Upload</button>
+          <small style="opacity:.7">Uploads save to /uploads and set Image URL</small>
+        </div>
+
         ${badgeHTML(badge)}
       </div>
 
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
         <button class="btn btn-accent" data-save="${p.id}">Save</button>
         <button class="btn" data-cancel="${p.id}">Cancel</button>
       </div>

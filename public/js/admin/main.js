@@ -1,7 +1,7 @@
 import "./guard.js"; // auth check
 import { api } from "./api.js";
-import { CATEGORIES, PLACEHOLDER } from "./constants.js";
-import { euro, toCents, slugify, computeBadge, badgeHTML, toast, renderPreview } from "./utils.js";
+import { PLACEHOLDER } from "./constants.js";
+import { toCents, slugify, toast, renderPreview } from "./utils.js";
 import { rowView, rowEditor } from "./templates.js";
 
 /* ---------- DOM ---------- */
@@ -12,7 +12,7 @@ const createForm = document.getElementById("createForm");
 const newName = document.getElementById("newName");
 const newSlug = document.getElementById("newSlug");
 const newPrice = document.getElementById("newPrice");       // Regular price (€)
-const newOldPrice = document.getElementById("newOldPrice"); // Sale price (€) - discounted
+const newOldPrice = document.getElementById("newOldPrice"); // Sale price (€)
 const newCategory = document.getElementById("newCategory");
 const newStock = document.getElementById("newStock");
 
@@ -35,7 +35,7 @@ let slugDirty = false;
 newName?.addEventListener("input", () => { if (!slugDirty) newSlug.value = slugify(newName.value); });
 newSlug?.addEventListener("input", () => { slugDirty = true; });
 
-/* ---------- Preview / Upload ---------- */
+/* ---------- Preview / Upload (Create form) ---------- */
 renderPreview(preview, imageUrlInput?.value || "");
 imageUrlInput?.addEventListener("input", () => renderPreview(preview, imageUrlInput.value));
 
@@ -136,12 +136,49 @@ function renderList() {
   });
 }
 
+/* ---------- Edit helpers (inline upload) ---------- */
+function bindEditUploadHandlers(id) {
+  const fileInput = document.getElementById(`editFile-${id}`);
+  const uploadBtn = document.getElementById(`editUpload-${id}`);
+  const urlInput  = document.getElementById(`imgUrl-${id}`);
+  const preview   = document.getElementById(`imgPreview-${id}`);
+  if (!fileInput || !uploadBtn) return;
+
+  fileInput.addEventListener("change", () => {
+    const f = fileInput.files?.[0];
+    if (f) preview.src = URL.createObjectURL(f);
+  });
+
+  uploadBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const f = fileInput.files?.[0];
+    if (!f) return toast("Choose an image first");
+    try {
+      const { url } = await api.uploadImage(f); // -> { url: "/uploads/..." }
+      urlInput.value = url;
+      preview.src = url;
+      toast("Image uploaded");
+    } catch (err) {
+      toast(err.message || "Upload failed");
+    }
+  });
+
+  urlInput?.addEventListener("input", () => {
+    const v = urlInput.value.trim();
+    if (v) preview.src = v;
+    else preview.src = PLACEHOLDER;
+  });
+}
+
 function openEditor(id) {
   const p = cache.find((x) => String(x.id) === String(id));
   const row = list.querySelector(`.row[data-id="${id}"]`);
   row.outerHTML = rowEditor(p);
 
   const editor = list.querySelector(`.row.edit[data-id="${id}"]`);
+
+  // bind upload controls in editor
+  bindEditUploadHandlers(id);
 
   editor.querySelector("[data-cancel]").onclick = () => {
     editor.outerHTML = rowView(p);
@@ -150,17 +187,17 @@ function openEditor(id) {
 
   editor.querySelector("[data-save]").onclick = async () => {
     // Regular & Sale in edit form
-    const regularC = toCents(editor.querySelector('[name="priceEuro"]').value);      // regular €
-    const saleStr  = editor.querySelector('[name="oldPriceEuro"]').value.trim();     // sale €
+    const regularC = toCents(editor.querySelector('[name="priceEuro"]').value);   // regular €
+    const saleStr  = editor.querySelector('[name="oldPriceEuro"]').value.trim();  // sale €
 
     let priceC, oldC;
     if (saleStr) {
       const saleC = toCents(saleStr);
       if (saleC >= regularC) return alert("Sale price must be lower than the regular price.");
-      priceC = saleC;     // charge discounted
-      oldC   = regularC;  // compare-at is regular
+      priceC = saleC;     // discounted price charged
+      oldC   = regularC;  // compare-at
     } else {
-      priceC = regularC;  // no sale
+      priceC = regularC;
       oldC   = null;
     }
 
@@ -191,14 +228,14 @@ createForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const rawCategory = newCategory?.value ?? "";
 
-  const regularC = toCents(newPrice.value);               // regular/original €
-  const saleStr  = (newOldPrice?.value || "").trim();    // sale €/discounted
+  const regularC = toCents(newPrice.value);               // original €
+  const saleStr  = (newOldPrice?.value || "").trim();    // discounted €
 
   let priceC, oldC;
   if (saleStr) {
     const saleC = toCents(saleStr);
     if (saleC >= regularC) return alert("Sale price must be lower than the regular price.");
-    priceC = saleC;  // charge discounted
+    priceC = saleC;   // charge discounted
     oldC   = regularC; // compare-at is regular
   } else {
     priceC = regularC;

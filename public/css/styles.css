@@ -1,5 +1,5 @@
 /* ================================
-   Page-specific overrides
+   Page-specific overrides (Black + Rose)
    ================================ */
 
 /* Accessible skip link */
@@ -10,7 +10,7 @@ a.sr-only-focusable:focus {
   height: auto;
   margin: 8px;
   padding: 8px 12px;
-  background: #fff;
+  background: var(--panel); /* dark panel instead of white */
   border: 1px solid var(--glass-ring);
   border-radius: 999px;
   box-shadow: var(--shadow);
@@ -25,6 +25,7 @@ a.sr-only-focusable:focus {
   border: 1px solid var(--glass-ring);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow);
+  color: var(--ink);
 }
 .hero h2 { margin: 0 0 6px; }
 .hero p  { margin: 0 0 12px; }
@@ -43,7 +44,7 @@ a.sr-only-focusable:focus {
   padding: 6px 10px;
   border: 1px solid var(--glass-ring);
   border-radius: 999px;
-  background: #fff;
+  background: var(--panel); /* black panel */
   box-shadow: var(--shadow);
   font-size: 12px;
   color: var(--ink);
@@ -54,7 +55,7 @@ a.sr-only-focusable:focus {
   background: transparent;
   font-weight: 700;
   line-height: 1;
-  color: var(--rose-500);
+  color: var(--rose-400);
 }
 .filter-chip .x:hover { text-decoration: underline; }
 .filter-chip .x:focus-visible {
@@ -69,7 +70,7 @@ a.sr-only-focusable:focus {
 }
 .card[data-badge="LOW STOCK"]::before {
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: #553845;
+  color: var(--ink);
 }
 .card[data-badge="OUT"]::before {
   background: linear-gradient(135deg, #ef4444, #b91c1c);
@@ -93,20 +94,20 @@ a.sr-only-focusable:focus {
 .modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,.25);
-  backdrop-filter: blur(2px);
+  background: rgba(0,0,0,.6); /* stronger black overlay */
+  backdrop-filter: blur(3px);
 }
 
 .modal-dialog {
   position: relative;
   width: min(860px, 92vw);
   max-height: 88vh;
-  overflow: hidden;              /* keep rounded corners */
-  padding: 0;                    /* inner content handles padding */
+  overflow: hidden;
+  padding: 0;
   border-radius: 24px;
-  background: var(--panel);
+  background: var(--panel); /* dark panel */
   border: 1px solid var(--glass-ring);
-  box-shadow: 0 30px 60px rgba(0,0,0,.18), var(--shadow);
+  box-shadow: 0 30px 60px rgba(0,0,0,.45), var(--shadow);
   transform: translateY(8px) scale(.98);
   opacity: 0;
   transition: transform .2s ease, opacity .2s ease;
@@ -171,7 +172,7 @@ a.sr-only-focusable:focus {
 }
 .modal-dialog[data-badge="LOW STOCK"]::before {
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: #553845;
+  color: var(--ink);
 }
 .modal-dialog[data-badge="OUT"]::before {
   background: linear-gradient(135deg, #ef4444, #b91c1c);
@@ -193,27 +194,27 @@ a.sr-only-focusable:focus {
 }
 
 /* ==========================================
-   LIST MODE (Compact view) — toggle .compact on .product-grid
+   LIST MODE (Compact view)
    ========================================== */
 .product-grid.compact {
-  grid-template-columns: 1fr;   /* one row per product */
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
-/* Turn each card into a horizontal row */
 .product-grid.compact .card {
   display: grid;
-  grid-template-columns: 72px 1fr auto; /* thumb | info | actions */
+  grid-template-columns: 72px 1fr auto;
   align-items: center;
   column-gap: 12px;
-
   padding: 8px 12px;
   border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--glass-ring);
   box-shadow: none;
   transform: none;
 }
 .product-grid.compact .card:hover {
-  box-shadow: 0 8px 18px rgba(0,0,0,.08);
+  box-shadow: 0 8px 18px rgba(0,0,0,.2);
 }
 
 /* Thumbnail */
@@ -235,6 +236,7 @@ a.sr-only-focusable:focus {
   font-size: 14px;
   line-height: 1.2;
   font-weight: 700;
+  color: var(--ink);
 }
 .product-grid.compact .card > .price {
   grid-column: 2 / 3;
@@ -242,10 +244,11 @@ a.sr-only-focusable:focus {
   margin: 0;
   font-size: 13px;
   line-height: 1.2;
+  color: var(--ink-2);
 }
 .product-grid.compact .card .price .was { margin-left: 6px; }
 
-/* Actions on the right */
+/* Actions */
 .product-grid.compact .card .actions {
   grid-column: 3 / 4;
   grid-row: 1 / span 2;
@@ -270,7 +273,7 @@ a.sr-only-focusable:focus {
   border-radius: 999px;
 }
 
-/* ---------- Shared helpers (index/login) ---------- */
+/* ---------- Shared helpers ---------- */
 .checkbox-inline {
   display: inline-flex;
   gap: 6px;
@@ -300,7 +303,7 @@ body.login-page .site-bg,
 body.login-page .page-bg,
 body.login-page .bg,
 body.login-page .backdrop {
-  pointer-events: none !important;   /* background layers won't block clicks */
+  pointer-events: none !important;
 }
 body.login-page main {
   position: relative;
@@ -315,6 +318,7 @@ body.login-page main {
 .btn-ghost {
   background: transparent;
   border: 1px solid var(--glass-ring);
+  color: var(--ink);
 }
 
 .lang-flags {
@@ -322,7 +326,6 @@ body.login-page main {
   gap: 8px;
   align-items: center;
 }
-
 .lang-flags img {
   width: 28px;
   height: 20px;
@@ -330,25 +333,25 @@ body.login-page main {
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
-
 .lang-flags img:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+  box-shadow: 0 0 6px rgba(255,143,179,.4);
 }
-
 .lang-flags img.active {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--rose-400);
   transform: scale(1.15);
 }
 
-
-/* Tighter on small screens: actions under info */
+/* Compact actions under info (mobile) */
 @media (max-width: 560px) {
   .product-grid.compact .card {
-    grid-template-columns: 60px 1fr; /* thumb | content */
+    grid-template-columns: 60px 1fr;
     row-gap: 6px;
   }
-  .product-grid.compact .card > img:first-child { width: 60px; height: 60px; }
+  .product-grid.compact .card > img:first-child {
+    width: 60px;
+    height: 60px;
+  }
   .product-grid.compact .card .actions {
     grid-column: 2 / 3;
     grid-row: 3;

@@ -1,0 +1,87 @@
+/* ===== Login page (page-scoped) ===== */
+
+/* Center the login content */
+body.login-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: start center;
+  padding: 48px 16px;
+}
+
+/* 1) absolutely nothing above the form */
+body.login-page::before,
+body.login-page::after,
+body.login-page .site-bg,
+body.login-page .page-bg,
+body.login-page .bg,
+body.login-page .backdrop,
+body.login-page .modal,
+body.login-page .modal-backdrop {
+  display: none !important;
+  content: none !important;
+  pointer-events: none !important;
+}
+/* decorative pseudos can’t eat clicks */
+body.login-page *::before,
+body.login-page *::after {
+  pointer-events: none !important;
+}
+
+/* 2) remove any transforms/filters that create weird hitboxes */
+body.login-page, body.login-page * {
+  transform: none !important;
+  filter: none !important;
+}
+
+/* 3) raise the login card above everything and ensure interactivity */
+.login-shell {
+  width: min(880px, 92vw);
+  background: var(--panel);
+  border: 1px solid var(--glass-ring);
+  box-shadow: var(--shadow);
+  border-radius: 22px;
+  padding: 18px 22px;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+}
+.login-shell * { pointer-events: auto; }
+
+/* tidy form layout */
+.login-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 14px 18px;
+  align-items: end;
+}
+.login-grid .full { grid-column: 1 / -1; }
+
+/* inputs visible & clickable */
+.login-shell input[type="email"],
+.login-shell input[type="password"] {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--glass-ring);
+  border-radius: 12px;
+  padding: 10px 12px;
+  width: 100%;
+  outline: 0;
+  transition: box-shadow .2s, border-color .2s;
+}
+.login-shell input:focus {
+  border-color: rgba(255,143,179,.6);
+  box-shadow: 0 0 0 4px rgba(255,143,179,.18);
+}
+
+/* show/hide button layout */
+.input-with-button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+/* responsive: stack nicely */
+@media (max-width: 720px) {
+  .login-grid { grid-template-columns: 1fr; }
+}

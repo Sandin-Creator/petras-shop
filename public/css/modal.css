@@ -1,0 +1,28 @@
+/* Quick View modal */
+.modal{position:fixed; inset:0; z-index:1000; display:grid; place-items:center}
+.modal[hidden]{display:none}
+.modal-backdrop{position:absolute; inset:0; background:rgba(0,0,0,.45); backdrop-filter:blur(3px)}
+.modal-dialog{
+  position:relative; width:min(860px,92vw); max-height:88vh; overflow:hidden; padding:0;
+  border-radius:24px; background:var(--panel-solid); border:1px solid var(--glass-ring);
+  box-shadow:0 30px 60px rgba(0,0,0,.42), var(--shadow);
+  transform:translateY(8px) scale(.98); opacity:0; transition:transform .2s ease, opacity .2s ease;
+}
+.modal[aria-hidden="false"] .modal-dialog{transform:translateY(0) scale(1); opacity:1}
+@media (prefers-reduced-motion: reduce){.modal-dialog{transition:none;transform:none;opacity:1}}
+
+.modal-close{position:absolute; top:10px; right:10px; z-index:2}
+#qv-body{max-height:88vh; overflow:auto; padding:16px; overscroll-behavior:contain}
+#qv-body img{display:block; width:100%; height:min(44vh,360px); object-fit:cover; border-radius:24px 24px 0 0; margin:0}
+#qv-body .meta{display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; margin-top:10px}
+#qv-body .meta h3{margin:0}
+#qv-body .actions{display:flex; gap:8px; margin-top:10px}
+
+/* ribbons on modal */
+.modal-dialog[data-badge]::before{
+  content:attr(data-badge); position:absolute; top:14px; right:-14px; background:var(--grad); color:#fff;
+  font-size:12px; font-weight:700; padding:6px 14px; transform:rotate(12deg); border-radius:999px; box-shadow:var(--shadow);
+}
+.modal-dialog[data-badge="NEW"]::before{background:linear-gradient(135deg,#36d399,#16a34a)}
+.modal-dialog[data-badge="LOW STOCK"]::before{background:linear-gradient(135deg,#fbbf24,#f59e0b); color:#1a1b1f}
+.modal-dialog[data-badge="OUT"]::before{background:linear-gradient(135deg,#ef4444,#b91c1c)}

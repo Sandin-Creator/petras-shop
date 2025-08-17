@@ -6,34 +6,57 @@
   <meta name="robots" content="noindex,nofollow" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- external styles only -->
+  <!-- Site styles -->
   <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/forms-and-filters.css">
   <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/product.css">
+  <link rel="stylesheet" href="/css/modal.css">
+  <link rel="stylesheet" href="/css/admin.css">
   <link rel="stylesheet" href="/css/utilities.css">
-  <link rel="stylesheet" href="/css/styles.css" />
+  <!-- Page-scoped styles -->
+  <link rel="stylesheet" href="/css/login.css">
 </head>
 
 <body class="login-page">
-  <main class="container">
-    <h2>Admin Login</h2>
+  <main class="container" role="main">
+    <h1>Admin Login</h1>
 
-    <form id="loginForm" class="card" autocomplete="on">
-      <label for="email">Email</label>
-      <input id="email" name="email" type="email" placeholder="Email" autocomplete="username" required />
+    <section class="login-shell" aria-label="Sign in">
+      <form id="loginForm" class="login-grid" autocomplete="on" novalidate aria-describedby="msg">
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="Email"
+                 autocomplete="username" required autofocus />
+        </div>
 
-      <label for="password">Password</label>
-      <div class="input-with-button">
-        <input id="password" name="password" type="password" placeholder="Password" autocomplete="current-password" required />
-        <button type="button" id="togglePwd" class="btn btn-ghost" aria-pressed="false" aria-label="Show password">Show</button>
-      </div>
+        <div class="full input-with-button">
+          <div>
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Password"
+                   autocomplete="current-password" required />
+          </div>
+          <button type="button" id="togglePwd" class="btn btn-ghost"
+                  aria-pressed="false" aria-controls="password" aria-label="Show password">
+            Show
+          </button>
+        </div>
 
-      <label for="code">Code</label>
-      <input id="code" name="code" type="password" placeholder="Owner code" autocomplete="one-time-code" required />
+        <div>
+          <label for="code">Owner code</label>
+          <input id="code" name="code" type="password" placeholder="Owner code"
+                 autocomplete="one-time-code" required />
+        </div>
 
-      <button type="submit" class="btn btn-accent">Sign in</button>
-      <p id="msg" class="price" role="alert"></p>
-    </form>
+        <div>
+          <button id="submitBtn" type="submit" class="btn btn-accent">Sign in</button>
+        </div>
+
+        <p id="msg" class="price full" role="status" aria-live="polite" aria-atomic="true"></p>
+      </form>
+    </section>
   </main>
 
   <script>
@@ -42,38 +65,47 @@
       const pwd = document.getElementById("password");
       const btn = document.getElementById("togglePwd");
       btn.addEventListener("click", () => {
-        const show = pwd.type === "password";
-        pwd.type = show ? "text" : "password";
-        btn.textContent = show ? "Hide" : "Show";
-        btn.setAttribute("aria-pressed", String(show));
-        btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+        const showing = pwd.type === "password";
+        pwd.type = showing ? "text" : "password";
+        btn.textContent = showing ? "Hide" : "Show";
+        btn.setAttribute("aria-pressed", String(showing));
+        btn.setAttribute("aria-label", showing ? "Hide password" : "Show password");
+        pwd.focus({ preventScroll: true });
       });
     })();
 
     // Submit with owner code
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    (function () {
+      const form = document.getElementById("loginForm");
       const msg = document.getElementById("msg");
-      msg.textContent = "";
+      const submitBtn = document.getElementById("submitBtn");
 
-      const email = document.getElementById("email").value.trim().toLowerCase();
-      const password = document.getElementById("password").value;
-      const code = document.getElementById("code").value.trim();
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.textContent = "";
+        submitBtn.disabled = true;
 
-      try {
-        const res = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ email, password, code })
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok || !data.ok) throw new Error(data.error || "Invalid credentials");
-        location.href = "/admin";
-      } catch (err) {
-        msg.textContent = err.message || "Login failed";
-      }
-    });
+        const email = document.getElementById("email").value.trim().toLowerCase();
+        const password = document.getElementById("password").value;
+        const code = document.getElementById("code").value.trim();
+
+        try {
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ email, password, code })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || !data.ok) throw new Error(data.error || "Invalid credentials");
+          location.href = "/admin";
+        } catch (err) {
+          msg.textContent = err.message || "Login failed";
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    })();
   </script>
 </body>
 </html>

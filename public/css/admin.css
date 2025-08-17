@@ -1,12 +1,6 @@
 /* === Admin Interaction Hardening (scoped to admin page) === */
 body.admin-page *::before,
-body.admin-page *::after {
-  /* Decorative pseudo-elements must never eat clicks */
-  pointer-events: none !important;
-}
-
-/* If your theme draws backgrounds on container/body via ::before/::after,
-   suppress them only on the admin page */
+body.admin-page *::after { pointer-events: none !important; }
 body.admin-page::before,
 body.admin-page::after,
 body.admin-page main.container::before,
@@ -16,7 +10,7 @@ body.admin-page main.container::after {
   pointer-events: none !important;
 }
 
-/* Put admin UI above any background layers */
+/* Ensure admin UI stays above */
 body.admin-page main.container,
 body.admin-page .adminbar,
 body.admin-page .admin-grid,
@@ -26,39 +20,57 @@ body.admin-page #adminList {
   z-index: 10;
 }
 
-/* Prevent weird hitboxes from transforms/filters on ancestors */
+/* Prevent transforms creating offset hitboxes */
 html,
 body.admin-page,
-body.admin-page main.container {
-  transform: none !important;
-  filter: none !important;
-}
-
-/* Create a clean stacking context for admin content */
+body.admin-page main.container { transform: none !important; filter: none !important; }
 body.admin-page main.container { isolation: isolate; }
 
-/* --- Optional: make sure interactive children accept clicks --- */
+/* Allow interactivity inside cards */
 body.admin-page .card,
-body.admin-page .card * {
-  pointer-events: auto;
-}
+body.admin-page .card * { pointer-events: auto; }
 
 /* === Admin Layout === */
-.adminbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-
-.admin-grid {
-  display:grid; grid-template-columns:360px 1fr; gap:24px; align-items:start;
+.adminbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
-.admin-grid > .card { height:100%; }
 
+/* Two-column layout: left = New Product, right = Products */
+.admin-grid {
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr); /* adjust 420px to taste */
+  gap: 24px;
+  align-items: start;
+}
+
+/* Cards fill their column */
+.admin-grid > .card { width: 100%; }
+
+/* Rows inside product list card */
 .row {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:14px; border-bottom:1px dashed var(--glass-ring);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border-bottom: 1px dashed var(--glass-ring);
+  color: var(--ink);
 }
 
 /* === Admin Form (New Product) === */
-.form-row { display:flex; gap:12px; }
-.form-group { flex:1; display:flex; flex-direction:column; gap:6px; }
+.form-row {
+  display: flex;
+  flex-direction: column; /* stacked fields */
+  gap: 12px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
 
 .card input[type="text"],
 .card input[type="number"],
@@ -66,33 +78,48 @@ body.admin-page .card * {
 .card input[type="file"],
 .card select,
 .card textarea {
-  width:100%; padding:10px 12px;
-  border-radius:12px; border:1px solid var(--glass-ring);
-  background:#fff; color:var(--ink);
-  outline:0; transition:box-shadow .2s, border-color .2s, transform .12s;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-ring);
+  background: var(--panel);
+  color: var(--ink);
+  outline: 0;
+  transition: box-shadow .2s, border-color .2s, transform .12s;
 }
 
 .card input:focus,
 .card select:focus,
 .card textarea:focus {
-  border-color:rgba(255,143,179,.6);
-  box-shadow:0 0 0 4px rgba(255,143,179,.18);
+  border-color: rgba(255,143,179,.6);
+  box-shadow: 0 0 0 4px rgba(255,143,179,.18);
 }
 
-.upload-row { display:flex; gap:8px; align-items:center; }
+/* Upload row */
+.upload-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
 
 /* Progress + status */
 progress {
-  appearance:none; height:10px; border-radius:999px; overflow:hidden;
-  background:var(--rose-100); border:1px solid var(--glass-ring);
+  appearance: none;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--elev);
+  border: 1px solid var(--glass-ring);
 }
-progress::-webkit-progress-bar { background:var(--rose-100); }
-progress::-webkit-progress-value { background:var(--grad); }
-progress::-moz-progress-bar { background:var(--grad); }
+progress::-webkit-progress-bar { background: var(--elev); }
+progress::-webkit-progress-value { background: var(--grad); }
+progress::-moz-progress-bar { background: var(--grad); }
 
-/* Responsive */
-@media (max-width:720px){
-  .admin-grid { grid-template-columns:1fr; }
-  .site-title::after { width:72%; }
-  .form-row { flex-direction:column; }
+/* Responsive: stack on smaller screens */
+@media (max-width: 1000px) {
+  .admin-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 720px) {
+  .adminbar { flex-direction: column; gap: 10px; }
 }

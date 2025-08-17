@@ -4,46 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin · Petras Shop</title>
-  <link rel="stylesheet" href="/css/admin.css">
-  <link rel="stylesheet" href="/css/theme.css">
-  <link rel="stylesheet" href="/css/layout.css">
-  <link rel="stylesheet" href="/css/components.css">
-  <link rel="stylesheet" href="/css/utilities.css">
-  <link rel="stylesheet" href="/css/styles.css" />
-  <style>
-    /* ---- ADMIN INTERACTION FIXES ---- */
-    /* kill any full-page decorative overlays from the theme on this page */
-    body.admin-page::before,
-    body.admin-page::after,
-    main.container::before,
-    main.container::after {
-      content: none !important;
-      display: none !important;
-      pointer-events: none !important;
-    }
-    /* absolutely nothing decorative should eat clicks */
-    body.admin-page *::before,
-    body.admin-page *::after {
-      pointer-events: none !important;
-    }
-    /* ensure admin UI sits above background layers */
-    main.container,
-    .adminbar,
-    .admin-grid,
-    .admin-grid .card {
-      position: relative;
-      z-index: 10;
-    }
-    /* avoid weird hitboxes from transforms/filters */
-    html, body.admin-page, main.container {
-      transform: none !important;
-      filter: none !important;
-    }
-    /* small layout helpers used by this page */
-    .form-row { display: flex; gap: 12px; }
-    .form-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-    .upload-row { display: flex; gap: 8px; align-items: center; }
-  </style>
+<link rel="stylesheet" href="/css/theme.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/forms-and-filters.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/product.css">
+<link rel="stylesheet" href="/css/modal.css">
+<link rel="stylesheet" href="/css/admin.css">
+<link rel="stylesheet" href="/css/utilities.css">
 </head>
 
 <body class="admin-page">

@@ -1,46 +1,28 @@
-/* === Container === */
-.container{max-width:1150px; margin:0 auto; padding:var(--sp-5) var(--sp-4)}
-
-/* === Header (glassy) === */
+/* Header: translucent charcoal glass, lighter than black */
 .site-header{
   position:sticky; top:0; z-index:50;
   backdrop-filter:saturate(120%) blur(8px);
-  background:linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.55));
+  background: linear-gradient(180deg, rgba(30,32,38,.85), rgba(30,32,38,.65));
   border-bottom:1px solid var(--glass-ring);
-  box-shadow:0 8px 20px rgba(255,79,135,.08);
+  box-shadow:0 8px 20px rgba(0,0,0,.45);
 }
 .header-content{display:flex; align-items:center; justify-content:space-between; padding:18px var(--sp-4)}
+
 .site-title{
   margin:0; font-size:clamp(26px,3.2vw,40px); font-weight:800;
-  background:linear-gradient(90deg,#6b4352 0%, var(--rose-500) 55%, #6b4352 100%);
+  background: linear-gradient(90deg, #c7b2bb 0%, var(--rose-500) 55%, #c7b2bb 100%);
   -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:.3px; position:relative;
 }
 .site-title::after{
   content:""; position:absolute; left:0; bottom:-6px; height:3px; width:56%;
-  background:var(--grad); border-radius:999px; filter:saturate(120%);
+  background: var(--grad); border-radius:999px; filter:saturate(120%);
 }
 
 /* Header nav chips */
 .site-nav .nav-link{
   padding:8px 12px; border:1px solid var(--glass-ring);
   border-radius:999px; background:var(--panel);
+  color:var(--ink);
   transition:transform .15s ease, background .2s ease, box-shadow .2s ease;
 }
 .site-nav .nav-link:hover{transform:translateY(-2px); box-shadow:var(--shadow)}
-
-/* === Filters (pill inputs) === */
-.filters{display:flex; flex-wrap:wrap; gap:10px; margin:24px 0}
-.filter-input,.filter-select,button{
-  padding:10px 12px; border-radius:999px; border:1px solid var(--glass-ring);
-  background:var(--panel); color:var(--ink);
-  outline:0; transition:box-shadow .2s, transform .12s, background .2s;
-}
-.filter-input:focus,.filter-select:focus,.btn:focus-visible,.btn-accent:focus-visible{
-  box-shadow:0 0 0 4px rgba(255,143,179,.18)
-}
-button{cursor:pointer}
-button:hover{transform:translateY(-1px)}
-
-/* === Product Grids === */
-.product-grid{display:grid; gap:22px; grid-template-columns:repeat(auto-fill, minmax(240px,1fr))}
-.grid{display:grid; gap:22px; grid-template-columns:repeat(auto-fill, minmax(220px,1fr))}

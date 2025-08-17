@@ -1,48 +1,36 @@
-/* === Theme Variables (Rose Deluxe) === */
+/* ===== Theme: Rose Charcoal (lighter than pure black) ===== */
 :root{
-  --rose-50:#fff7fa;
-  --rose-75:#fff2f6;
-  --rose-100:#ffe7f0;
-  --rose-200:#ffd1e1;
-  --rose-300:#ffb3cd;
-  --rose-400:#ff8fb3;
-  --rose-500:#ff4f87;
-  --ink:#553845;
-  --mauve:#8f6a76;
+  /* Neutrals */
+  --bg: #141416;               /* page background (charcoal) */
+  --bg-2: #1a1b1f;             /* alt background */
+  --panel: rgba(255,255,255,.08);
+  --panel-solid: #1e2026;      /* solid card surface */
+  --elev: #23262d;             /* elevated surface */
+  --glass-ring: rgba(255,255,255,.12);
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
 
-  --panel:rgba(255,255,255,.65);
-  --glass-ring:rgba(255,143,179,.35);
-  --shadow:0 10px 30px rgba(255,79,135,.18);
+  /* Text */
+  --ink: #f4f5f7;
+  --ink-2: #cfd2d7;
+  --ink-3: #9aa0a6;
 
+  /* Rose scale (accents) */
+  --rose-50:#fff7fa; --rose-75:#fff2f6; --rose-100:#ffe7f0;
+  --rose-200:#ffd1e1; --rose-300:#ffb3cd; --rose-400:#ff8fb3; --rose-500:#ff4f87;
+
+  /* Brand gradients */
+  --grad: linear-gradient(135deg, var(--rose-400), var(--rose-500));
+  --grad-soft: linear-gradient(180deg, rgba(255,143,179,.2), transparent 55%);
+
+  /* States */
+  --success:#2dcc70; --warn:#ffcc00; --danger:#ff4d4f;
+
+  /* Radii & spacing */
   --r-sm:10px; --r-md:16px; --r-lg:22px; --r-xl:32px;
   --sp-1:6px; --sp-2:10px; --sp-3:14px; --sp-4:18px; --sp-5:26px;
-
-  --grad:linear-gradient(135deg,var(--rose-400),var(--rose-500));
-  --grad-soft:linear-gradient(180deg,rgba(255,143,179,.35),transparent 55%);
 }
 
-/* === Base + Background === */
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0; color:var(--ink);
-  font-family:ui-sans-serif, system-ui, Arial, sans-serif;
-  background:
-    radial-gradient(1200px 800px at 10% -10%, var(--rose-100), transparent 60%),
-    radial-gradient(900px 600px at 110% 10%, var(--rose-200), transparent 60%),
-    radial-gradient(800px 500px at 50% 120%, var(--rose-75), transparent 60%),
-    var(--rose-50);
-  position:relative; overflow-x:hidden;
+/* Optional darker toggle */
+[data-theme="dark"]{
+  --bg:#0f1012; --panel:rgba(255,255,255,.06); --panel-solid:#191b20; --elev:#1d2026;
 }
-body::before{
-  content:""; position:fixed; inset:-20vmax; pointer-events:none; z-index:-1;
-  background:
-    radial-gradient(50% 50% at 20% 30%, rgba(255,143,179,.18), transparent 60%),
-    radial-gradient(50% 50% at 80% 70%, rgba(255,79,135,.12), transparent 60%);
-  filter:blur(40px);
-  animation:float 16s ease-in-out infinite alternate;
-}
-@keyframes float{to{transform:translate3d(0,-20px,0) scale(1.02)}}
-
-a{color:var(--rose-500); text-decoration:none}
-img{max-width:100%; display:block}

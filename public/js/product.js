@@ -1,4 +1,3 @@
-// public/js/product.js
 const details = document.getElementById("productDetails");
 const similarGrid = document.getElementById("similarGrid");
 
@@ -57,7 +56,7 @@ function savingsHTML(p) {
   if (!hasSale(p)) return "";
   const saved = p.oldPrice - p.price;
   const percent = salePercent(p);
-  return `<div class="price" style="margin-top:6px">You save <strong>${euro(saved)}</strong> (${percent}%)</div>`;
+  return `<div class="price" style="margin-top:6px" data-i18n="youSave">You save <strong>${euro(saved)}</strong> (${percent}%)</div>`;
 }
 
 /* ---------- slug ---------- */
@@ -65,7 +64,7 @@ const params = new URLSearchParams(location.search);
 const slug = params.get("slug");
 
 if (!slug) {
-  details.innerHTML = `<p>Invalid product link.</p>`;
+  details.innerHTML = `<p data-i18n="invalidLink">Invalid product link.</p>`;
 } else {
   loadProduct(slug);
 }
@@ -73,11 +72,11 @@ if (!slug) {
 /* ---------- product loader ---------- */
 async function loadProduct(slug) {
   try {
-    details.innerHTML = `<p class="price">Loading...</p>`;
+    details.innerHTML = `<p class="price" data-i18n="loading">Loading...</p>`;
     const res = await fetch(`/api/products/${encodeURIComponent(slug)}`);
 
     if (!res.ok) {
-      details.innerHTML = `<p>Product not found.</p>`;
+      details.innerHTML = `<p data-i18n="notFound">Product not found.</p>`;
       return;
     }
 
@@ -89,6 +88,11 @@ async function loadProduct(slug) {
     const badge = computeBadge(product);
     if (badge) details.setAttribute("data-badge", badge);
     else details.removeAttribute("data-badge");
+
+    // Build category translation key (e.g. clothes -> catClothes)
+    const catKey = product.category
+      ? "cat" + product.category.charAt(0).toUpperCase() + product.category.slice(1)
+      : "";
 
     // Render details (with sale handling)
     details.innerHTML = `
@@ -107,28 +111,29 @@ async function loadProduct(slug) {
       ${priceHTML(product, { large: true })}
       ${savingsHTML(product)}
 
-      <p style="margin-top:10px">Category: ${product.category || "—"}</p>
-      <p>Stock: ${typeof product.stock === "number" ? product.stock : "—"}</p>
-      <p>Added: ${product.createdAt ? new Date(product.createdAt).toLocaleDateString() : "—"}</p>
+      <p style="margin-top:10px" data-i18n="category">Category:</p>
+      ${catKey ? `<p class="category" data-i18n="${catKey}">${product.category}</p>` : `<p>—</p>`}
+      <p data-i18n="stock">Stock:</p> ${typeof product.stock === "number" ? product.stock : "—"}
+      <p data-i18n="added">Added:</p> ${product.createdAt ? new Date(product.createdAt).toLocaleDateString() : "—"}
     `;
 
     // Load similar products
     loadSimilar(product.category || "", slug);
   } catch (err) {
     console.error(err);
-    details.innerHTML = `<p>Error loading product.</p>`;
+    details.innerHTML = `<p data-i18n="errorLoading">Error loading product.</p>`;
   }
 }
 
 /* ---------- similar products ---------- */
 async function loadSimilar(category, excludeSlug) {
   try {
-    similarGrid.innerHTML = `<p class="price">Loading...</p>`;
+    similarGrid.innerHTML = `<p class="price" data-i18n="loading">Loading...</p>`;
     const res = await fetch(
       `/api/products?category=${encodeURIComponent(category)}&page=1`
     );
     if (!res.ok) {
-      similarGrid.innerHTML = `<p>Error loading similar products.</p>`;
+      similarGrid.innerHTML = `<p data-i18n="errorLoading">Error loading similar products.</p>`;
       return;
     }
 
@@ -136,7 +141,7 @@ async function loadSimilar(category, excludeSlug) {
     const filtered = items.filter((p) => p.slug !== excludeSlug).slice(0, 4);
 
     if (filtered.length === 0) {
-      similarGrid.innerHTML = `<p>No similar products found.</p>`;
+      similarGrid.innerHTML = `<p data-i18n="noSimilar">No similar products found.</p>`;
       return;
     }
 
@@ -153,20 +158,25 @@ async function loadSimilar(category, excludeSlug) {
             </div>`
           : `<p class="price">${euro(p.price)}</p>`;
 
+        const catKey = p.category
+          ? "cat" + p.category.charAt(0).toUpperCase() + p.category.slice(1)
+          : "";
+
         return `
           <article class="card"${badgeAttr}>
             <img src="${imgSrc}" alt="${p.name}"
                  onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
             <h4>${p.name}</h4>
+            ${catKey ? `<p class="category" data-i18n="${catKey}">${p.category}</p>` : ""}
             ${priceBlock}
             ${hasSale(p) ? `<div class="price" style="font-size:12px; margin-top:2px">−${salePercent(p)}%</div>` : ``}
-            <a class="btn" href="/product.html?slug=${encodeURIComponent(p.slug)}">View</a>
+            <a class="btn" href="/product.html?slug=${encodeURIComponent(p.slug)}" data-i18n="view">View</a>
           </article>
         `;
       })
       .join("");
   } catch (err) {
     console.error(err);
-    similarGrid.innerHTML = `<p>Error loading similar products.</p>`;
+    similarGrid.innerHTML = `<p data-i18n="errorLoading">Error loading similar products.</p>`;
   }
 }

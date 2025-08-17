@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Product · Petras Shop</title>
+  <title data-i18n="productTitle">Product · Petras Shop</title>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/components.css">
@@ -14,7 +16,7 @@
   <main class="container" role="main">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb" style="margin:6px 0 10px">
-      <a class="btn" href="/">← Back to Products</a>
+      <a class="btn" href="/" data-i18n="backToProducts">← Back to Products</a>
     </nav>
 
     <!-- Product -->
@@ -24,34 +26,42 @@
 
     <!-- Similar products -->
     <section aria-labelledby="similar-title" style="margin-top:24px">
-      <h2 id="similar-title" style="margin:0 0 8px">Similar Products</h2>
-      <p id="similar-meta" class="price" aria-live="polite" aria-atomic="true">Loading…</p>
+      <h2 id="similar-title" style="margin:0 0 8px" data-i18n="similarProducts">Similar Products</h2>
+      <p id="similar-meta" class="price" aria-live="polite" aria-atomic="true" data-i18n="loading">Loading…</p>
       <div id="similarGrid" class="grid product-grid" aria-label="Similar products"></div>
 
-      <!-- Empty state (toggle via JS if none) -->
+      <!-- Empty state -->
       <template id="similar-empty">
         <div class="card" style="text-align:center">
-          <h4>Nothing similar yet</h4>
-          <p class="price">Browse categories to discover more.</p>
+          <h4 data-i18n="noSimilar">Nothing similar yet</h4>
+          <p class="price" data-i18n="browseMore">Browse categories to discover more.</p>
         </div>
       </template>
 
-      <!-- Optional mini-card template your JS can clone -->
+      <!-- Optional mini-card template -->
       <template id="similar-card">
         <article class="card">
           <img alt="" />
           <h4></h4>
           <p class="price"></p>
-          <a class="btn">View</a>
+          <a class="btn" data-i18n="view">View</a>
         </article>
       </template>
     </section>
   </main>
 
+  <!-- No-JS notice -->
   <noscript>
-    <div class="container"><p>Please enable JavaScript to view product details.</p></div>
+    <div class="container">
+      <p data-i18n="enableJs">Please enable JavaScript to view product details.</p>
+    </div>
   </noscript>
 
+  <!-- Scripts -->
   <script src="/js/product.js" defer></script>
+  <script type="module">
+    import { initLang } from "/js/i18n.js";
+    initLang();
+  </script>
 </body>
 </html>

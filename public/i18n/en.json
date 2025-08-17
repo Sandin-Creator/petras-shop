@@ -1,0 +1,53 @@
+{
+  "title": "Petras Shop",
+  "skip": "Skip to content",
+
+  "heroTitle": "Blooming new arrivals",
+  "heroDesc": "Soft tones, comfy cuts, and everyday essentials.",
+  "shopNow": "Shop now",
+
+  "search": "Search products...",
+  "category": "Category",
+  "allCategories": "All categories",
+  "catClothes": "Clothes",
+  "catShoes": "Shoes",
+  "catAccessories": "Accessories",
+  "catElectronics": "Electronics",
+  "catPerfume": "Perfume",
+  "catCosmetics": "Cosmetics",
+
+  "minPrice": "Minimum price",
+  "maxPrice": "Maximum price",
+  "sort": "Sort",
+  "sortNewest": "Newest",
+  "sortAsc": "Price ↑",
+  "sortDesc": "Price ↓",
+  "sortDiscount": "Biggest discount",
+  "onlySale": "On sale",
+  "inStock": "In stock only",
+  "compact": "Compact view",
+  "clear": "Clear all",
+
+  "loading": "Loading products…",
+  "loadMore": "Load more",
+  "noResults": "No results",
+  "tryAdjust": "Try adjusting filters or clearing your search.",
+
+  "view": "View",
+  "quickView": "Quick view",
+  "enableJs": "Please enable JavaScript to browse products.",
+  "admin": "Admin",
+
+  "youSave": "You save",
+  "invalidLink": "Invalid product link.",
+  "notFound": "Product not found.",
+  "errorLoading": "Error loading product.",
+  "noSimilar": "No similar products found.",
+  "stock": "Stock:",
+  "added": "Added:",
+
+  "productTitle": "Product · Petras Shop",
+  "backToProducts": "← Back to Products",
+  "similarProducts": "Similar Products",
+  "browseMore": "Browse categories to discover more."
+}

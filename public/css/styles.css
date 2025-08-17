@@ -317,6 +317,31 @@ body.login-page main {
   border: 1px solid var(--glass-ring);
 }
 
+.lang-flags {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.lang-flags img {
+  width: 28px;
+  height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.lang-flags img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+}
+
+.lang-flags img.active {
+  outline: 2px solid var(--color-accent);
+  transform: scale(1.15);
+}
+
+
 /* Tighter on small screens: actions under info */
 @media (max-width: 560px) {
   .product-grid.compact .card {

@@ -21,15 +21,21 @@ export function productCard(p) {
   const badgeAttr = badge ? ` data-badge="${badge}"` : "";
   const slug = encodeURIComponent(p.slug);
 
+  // Build category translation key, e.g. "clothes" -> "catClothes"
+  const catKey = p.category
+    ? "cat" + p.category.charAt(0).toUpperCase() + p.category.slice(1)
+    : "";
+
   return `
     <article class="card"${badgeAttr}>
       <img src="${imgSrc}" alt="${p.name}" loading="lazy"
            onerror="this.onerror=null;this.src='${PLACEHOLDER}'">
       <h4>${p.name}</h4>
+      ${catKey ? `<p class="category" data-i18n="${catKey}">${p.category}</p>` : ""}
       ${priceBlockHTML(p)}
       <div class="actions">
-        <a class="btn" href="/product.html?slug=${slug}">View</a>
-        <button class="btn" data-quick data-slug="${slug}">Quick view</button>
+        <a class="btn" href="/product.html?slug=${slug}" data-i18n="view">View</a>
+        <button class="btn" data-quick data-slug="${slug}" data-i18n="quickView">Quick view</button>
       </div>
     </article>
   `;

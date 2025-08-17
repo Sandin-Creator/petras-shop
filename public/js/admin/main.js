@@ -4,15 +4,15 @@ import { PLACEHOLDER } from "./constants.js";
 import { toCents, slugify, toast, renderPreview } from "./utils.js";
 import { rowView, rowEditor } from "./templates.js";
 
-/* ---------- DOM ---------- */
+/* ---------- DOM refs ---------- */
 const list = document.getElementById("adminList");
 const logoutBtn = document.getElementById("logout");
 const createForm = document.getElementById("createForm");
 
 const newName = document.getElementById("newName");
 const newSlug = document.getElementById("newSlug");
-const newPrice = document.getElementById("newPrice");       // Regular price (€)
-const newOldPrice = document.getElementById("newOldPrice"); // Sale price (€)
+const newPrice = document.getElementById("newPrice");
+const newOldPrice = document.getElementById("newOldPrice");
 const newCategory = document.getElementById("newCategory");
 const newStock = document.getElementById("newStock");
 
@@ -32,25 +32,31 @@ logoutBtn.onclick = async () => {
 
 /* ---------- Slug auto-fill ---------- */
 let slugDirty = false;
-newName?.addEventListener("input", () => { if (!slugDirty) newSlug.value = slugify(newName.value); });
+newName?.addEventListener("input", () => {
+  if (!slugDirty) newSlug.value = slugify(newName.value);
+});
 newSlug?.addEventListener("input", () => { slugDirty = true; });
 
-/* ---------- Preview / Upload (Create form) ---------- */
+/* ---------- Preview & Upload (Create form) ---------- */
 renderPreview(preview, imageUrlInput?.value || "");
 imageUrlInput?.addEventListener("input", () => renderPreview(preview, imageUrlInput.value));
 
-if (uploadBtn) {
-  uploadBtn.onclick = async () => {
-    if (!imageFile.files[0]) return alert("Choose an image first.");
-    try {
-      const { url } = await api.uploadImage(imageFile.files[0]);
-      imageUrlInput.value = url;
-      renderPreview(preview, url);
-    } catch (e) {
-      alert(e.message || "Upload failed");
-    }
-  };
-}
+uploadBtn?.addEventListener("click", async () => {
+  const file = imageFile.files?.[0];
+  if (!file) return toast("Choose an image first");
+
+  if (!file.type.startsWith("image/")) return toast("Only images are allowed");
+  if (file.size > 5 * 1024 * 1024) return toast("Image must be under 5MB");
+
+  try {
+    const { url } = await api.uploadImage(file);
+    imageUrlInput.value = url;
+    renderPreview(preview, url);
+    toast("Image uploaded");
+  } catch (err) {
+    toast(err.message || "Upload failed");
+  }
+});
 
 /* ---------- State ---------- */
 let cache = [];
@@ -74,11 +80,12 @@ async function refresh() {
   renderList();
 }
 
+/* ---------- Render list ---------- */
 function renderList() {
   const items = applyAdminFilters(cache);
   list.innerHTML = items.map(rowView).join("");
 
-  // Delete
+  // Bind actions
   list.querySelectorAll("[data-del]").forEach((btn) => {
     btn.onclick = async () => {
       if (!confirm("Delete this product?")) return;
@@ -87,37 +94,35 @@ function renderList() {
         toast("Deleted");
         refresh();
       } catch (e) {
-        alert(e.message || "Delete failed");
+        toast(e.message || "Delete failed");
       }
     };
   });
 
-  // Edit
   list.querySelectorAll("[data-edit]").forEach((btn) => {
     btn.onclick = () => openEditor(btn.dataset.edit);
   });
 
-  // Stock adjust
   list.querySelectorAll("[data-action='stock']").forEach((btn) => {
     btn.onclick = async () => {
       const row = btn.closest(".row");
       const id = row.dataset.id;
       const deltaStr = prompt("Adjust stock by (e.g. +1 or -1):", "1");
       if (deltaStr === null) return;
+
       const delta = Number(deltaStr);
-      if (!Number.isFinite(delta) || delta === 0) return alert("Enter a non-zero number.");
+      if (!Number.isFinite(delta) || delta === 0) return toast("Enter a valid number");
 
       try {
         await api.patchStock(id, delta);
         toast("Stock updated");
         refresh();
       } catch (e) {
-        alert(e.message || "Stock update failed");
+        toast(e.message || "Stock update failed");
       }
     };
   });
 
-  // Hide / Unhide
   list.querySelectorAll("[data-action='hide']").forEach((btn) => {
     btn.onclick = async () => {
       const row = btn.closest(".row");
@@ -130,7 +135,7 @@ function renderList() {
         toast(nextHidden ? "Hidden" : "Unhidden");
         refresh();
       } catch (e) {
-        alert(e.message || "Visibility toggle failed");
+        toast(e.message || "Visibility toggle failed");
       }
     };
   });
@@ -153,8 +158,11 @@ function bindEditUploadHandlers(id) {
     e.preventDefault();
     const f = fileInput.files?.[0];
     if (!f) return toast("Choose an image first");
+    if (!f.type.startsWith("image/")) return toast("Only images are allowed");
+    if (f.size > 5 * 1024 * 1024) return toast("Image must be under 5MB");
+
     try {
-      const { url } = await api.uploadImage(f); // -> { url: "/uploads/..." }
+      const { url } = await api.uploadImage(f);
       urlInput.value = url;
       preview.src = url;
       toast("Image uploaded");
@@ -164,20 +172,17 @@ function bindEditUploadHandlers(id) {
   });
 
   urlInput?.addEventListener("input", () => {
-    const v = urlInput.value.trim();
-    if (v) preview.src = v;
-    else preview.src = PLACEHOLDER;
+    preview.src = urlInput.value.trim() || PLACEHOLDER;
   });
 }
 
+/* ---------- Editor ---------- */
 function openEditor(id) {
   const p = cache.find((x) => String(x.id) === String(id));
   const row = list.querySelector(`.row[data-id="${id}"]`);
   row.outerHTML = rowEditor(p);
 
   const editor = list.querySelector(`.row.edit[data-id="${id}"]`);
-
-  // bind upload controls in editor
   bindEditUploadHandlers(id);
 
   editor.querySelector("[data-cancel]").onclick = () => {
@@ -186,16 +191,15 @@ function openEditor(id) {
   };
 
   editor.querySelector("[data-save]").onclick = async () => {
-    // Regular & Sale in edit form
-    const regularC = toCents(editor.querySelector('[name="priceEuro"]').value);   // regular €
-    const saleStr  = editor.querySelector('[name="oldPriceEuro"]').value.trim();  // sale €
+    const regularC = toCents(editor.querySelector('[name="priceEuro"]').value);
+    const saleStr  = editor.querySelector('[name="oldPriceEuro"]').value.trim();
 
     let priceC, oldC;
     if (saleStr) {
       const saleC = toCents(saleStr);
-      if (saleC >= regularC) return alert("Sale price must be lower than the regular price.");
-      priceC = saleC;     // discounted price charged
-      oldC   = regularC;  // compare-at
+      if (saleC >= regularC) return toast("Sale price must be lower than regular price");
+      priceC = saleC;
+      oldC   = regularC;
     } else {
       priceC = regularC;
       oldC   = null;
@@ -218,25 +222,25 @@ function openEditor(id) {
       toast("Saved");
       refresh();
     } catch (e) {
-      alert(e.message || "Update failed");
+      toast(e.message || "Update failed");
     }
   };
 }
 
-/* ---------- Create ---------- */
+/* ---------- Create form ---------- */
 createForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const rawCategory = newCategory?.value ?? "";
 
-  const regularC = toCents(newPrice.value);               // original €
-  const saleStr  = (newOldPrice?.value || "").trim();    // discounted €
+  const regularC = toCents(newPrice.value);
+  const saleStr  = (newOldPrice?.value || "").trim();
 
   let priceC, oldC;
   if (saleStr) {
     const saleC = toCents(saleStr);
-    if (saleC >= regularC) return alert("Sale price must be lower than the regular price.");
-    priceC = saleC;   // charge discounted
-    oldC   = regularC; // compare-at is regular
+    if (saleC >= regularC) return toast("Sale price must be lower than regular price");
+    priceC = saleC;
+    oldC   = regularC;
   } else {
     priceC = regularC;
     oldC   = null;
@@ -248,7 +252,7 @@ createForm.addEventListener("submit", async (e) => {
     price: priceC,
     oldPrice: oldC,
     category: rawCategory === "" ? null : rawCategory,
-    imageUrl: imageUrlInput.value && imageUrlInput.value.trim() ? imageUrlInput.value.trim() : PLACEHOLDER,
+    imageUrl: imageUrlInput.value.trim() || PLACEHOLDER,
     stock: Number(newStock.value || 0),
   };
 
@@ -256,11 +260,11 @@ createForm.addEventListener("submit", async (e) => {
     await api.createProduct(payload);
     createForm.reset();
     slugDirty = false;
-    renderPreview(preview, ""); // reset preview
+    renderPreview(preview, "");
     toast("Created");
     refresh();
   } catch (err) {
-    alert(err.message || "Create failed");
+    toast(err.message || "Create failed");
   }
 });
 

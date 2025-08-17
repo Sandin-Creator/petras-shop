@@ -174,6 +174,33 @@
   color:#fff;
 }
 
+#langFlags {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#langFlags img {
+  width: 28px;
+  height: 20px;
+  object-fit: cover;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+#langFlags img:hover {
+  transform: scale(1.1);
+  border-color: #ccc;
+}
+
+#langFlags img.active {
+  border-color: #e6004c; /* accent color */
+  box-shadow: 0 0 6px rgba(230, 0, 76, 0.6);
+}
+
+
 /* =========================
    Optional extras (nice to have)
    ========================= */

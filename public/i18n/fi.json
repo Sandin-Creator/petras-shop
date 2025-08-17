@@ -1,0 +1,53 @@
+{
+  "title": "Petran Kauppa",
+  "skip": "Siirry sisältöön",
+
+  "heroTitle": "Uudet saapuneet kukkivat",
+  "heroDesc": "Pehmeät sävyt, mukavat leikkaukset ja arjen tarpeet.",
+  "shopNow": "Osta nyt",
+
+  "search": "Hae tuotteita...",
+  "category": "Kategoria",
+  "allCategories": "Kaikki kategoriat",
+  "catClothes": "Vaatteet",
+  "catShoes": "Kengät",
+  "catAccessories": "Asusteet",
+  "catElectronics": "Elektroniikka",
+  "catPerfume": "Hajuvedet",
+  "catCosmetics": "Kosmetiikka",
+
+  "minPrice": "Minimihinta",
+  "maxPrice": "Maksimihinta",
+  "sort": "Järjestä",
+  "sortNewest": "Uusimmat",
+  "sortAsc": "Hinta ↑",
+  "sortDesc": "Hinta ↓",
+  "sortDiscount": "Suurin alennus",
+  "onlySale": "Alennuksessa",
+  "inStock": "Vain varastossa",
+  "compact": "Kompakti näkymä",
+  "clear": "Tyhjennä kaikki",
+
+  "loading": "Ladataan tuotteita…",
+  "loadMore": "Lataa lisää",
+  "noResults": "Ei tuloksia",
+  "tryAdjust": "Kokeile muuttaa suodattimia tai tyhjentää hakusi.",
+
+  "view": "Näytä",
+  "quickView": "Pikakatselu",
+  "enableJs": "Ota JavaScript käyttöön selataksesi tuotteita.",
+  "admin": "Ylläpito",
+
+  "youSave": "Säästät",
+  "invalidLink": "Virheellinen tuotelinkki.",
+  "notFound": "Tuotetta ei löytynyt.",
+  "errorLoading": "Virhe tuotteen lataamisessa.",
+  "noSimilar": "Samankaltaisia tuotteita ei löytynyt.",
+  "stock": "Varasto:",
+  "added": "Lisätty:",
+
+  "productTitle": "Tuote · Petran Kauppa",
+  "backToProducts": "← Takaisin tuotteisiin",
+  "similarProducts": "Samankaltaiset tuotteet",
+  "browseMore": "Selaa kategorioita löytääksesi lisää."
+}

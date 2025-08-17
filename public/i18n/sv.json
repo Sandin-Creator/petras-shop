@@ -1,0 +1,53 @@
+{
+  "title": "Petras Butik",
+  "skip": "Hoppa till innehåll",
+
+  "heroTitle": "Blomstrande nyheter",
+  "heroDesc": "Mjuka toner, bekväma snitt och vardagliga favoriter.",
+  "shopNow": "Handla nu",
+
+  "search": "Sök produkter...",
+  "category": "Kategori",
+  "allCategories": "Alla kategorier",
+  "catClothes": "Kläder",
+  "catShoes": "Skor",
+  "catAccessories": "Accessoarer",
+  "catElectronics": "Elektronik",
+  "catPerfume": "Parfym",
+  "catCosmetics": "Kosmetika",
+
+  "minPrice": "Minimipris",
+  "maxPrice": "Maxpris",
+  "sort": "Sortera",
+  "sortNewest": "Nyaste",
+  "sortAsc": "Pris ↑",
+  "sortDesc": "Pris ↓",
+  "sortDiscount": "Största rabatten",
+  "onlySale": "På rea",
+  "inStock": "Endast i lager",
+  "compact": "Kompakt vy",
+  "clear": "Rensa alla",
+
+  "loading": "Laddar produkter…",
+  "loadMore": "Ladda fler",
+  "noResults": "Inga resultat",
+  "tryAdjust": "Försök justera filter eller rensa din sökning.",
+
+  "view": "Visa",
+  "quickView": "Snabbvy",
+  "enableJs": "Aktivera JavaScript för att bläddra bland produkter.",
+  "admin": "Admin",
+
+  "youSave": "Du sparar",
+  "invalidLink": "Ogiltig produktlänk.",
+  "notFound": "Produkten hittades inte.",
+  "errorLoading": "Fel vid inläsning av produkt.",
+  "noSimilar": "Inga liknande produkter hittades.",
+  "stock": "Lager:",
+  "added": "Tillagd:",
+
+  "productTitle": "Produkt · Petras Butik",
+  "backToProducts": "← Tillbaka till Produkter",
+  "similarProducts": "Liknande Produkter",
+  "browseMore": "Bläddra i kategorier för att upptäcka mer."
+}

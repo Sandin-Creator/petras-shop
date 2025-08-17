@@ -8,10 +8,10 @@ const FileStoreFactory = require("session-file-store");
 
 const app = express();
 
-// Trust proxy (Render/NGINX) so secure cookies work
+/* -------------------- Trust proxy (Render/NGINX) -------------------- */
 app.set("trust proxy", 1);
 
-// Body parsing
+/* -------------------- Body parsing -------------------- */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -65,7 +65,6 @@ app.get("/login", (req, res) => {
       ? res.status(404).sendFile(notFound)
       : res.status(404).send("Not found");
   }
-  // NOTE: serve single-file login page
   return res.sendFile(path.join(publicDir, "login.html"));
 });
 
@@ -77,7 +76,6 @@ if (ADMIN_LOGIN_KEY) {
 }
 
 /* -------------------- Admin (protected) -------------------- */
-// Prevent indexing of admin
 app.use("/admin", (req, res, next) => {
   res.set("X-Robots-Tag", "noindex, nofollow");
   next();
@@ -88,9 +86,28 @@ app.get("/admin", requireAdmin, (_req, res) => {
 });
 
 /* -------------------- API routes -------------------- */
-app.use("/api/upload", require("./routes/upload")); // your file is routes/upload.js
+app.use("/api/upload", require("./routes/upload"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/products", require("./routes/products"));
+
+/* -------------------- Uploads (persistent, with local fallback) -------------------- */
+function ensureWritableDir(preferred, fallback) {
+  try {
+    fs.mkdirSync(preferred, { recursive: true });
+    fs.accessSync(preferred, fs.constants.W_OK);
+    return preferred;
+  } catch {
+    fs.mkdirSync(fallback, { recursive: true });
+    return fallback;
+  }
+}
+
+const preferredUploads =
+  process.env.UPLOAD_DIR || path.join(__dirname, "..", "public", "uploads");
+const fallbackUploads = path.join(process.cwd(), "uploads");
+const UPLOAD_DIR = ensureWritableDir(preferredUploads, fallbackUploads);
+
+app.use("/uploads", express.static(UPLOAD_DIR));
 
 /* -------------------- Public static -------------------- */
 app.use(express.static(publicDir, { extensions: ["html"] }));

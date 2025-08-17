@@ -1,22 +1,135 @@
-/* Filters (pill inputs) */
-.filters{display:flex; flex-wrap:wrap; gap:10px; margin:24px 0}
-.filter-input,.filter-select,button{
-  padding:10px 12px; border-radius:999px;
-  border:1px solid var(--glass-ring); background:var(--panel); color:var(--ink);
-  outline:0; transition:box-shadow .2s, transform .12s, background .2s, border-color .2s;
+/* =========================
+   Filters (pill inputs)
+   ========================= */
+.filters{
+  display:flex; flex-wrap:wrap; gap:10px; margin:24px 0;
+  position:relative; z-index:5; /* keep above cards when menus open */
 }
-.filter-input:focus,.filter-select:focus,.btn:focus-visible,.btn-accent:focus-visible{
-  box-shadow:0 0 0 4px rgba(255,143,179,.18); border-color:rgba(255,143,179,.55);
-}
-button{cursor:pointer} button:hover{transform:translateY(-1px)}
 
-/* Active filter chips */
-.active-filters{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px}
+.filter-input,
+.filter-select,
+button{
+  padding:10px 12px; border-radius:999px;
+  border:1px solid var(--glass-ring);
+  background:var(--panel); color:var(--ink);
+  outline:0;
+  transition:box-shadow .2s, transform .12s, background .2s, border-color .2s;
+}
+.filter-input:focus,
+.filter-select:focus,
+.btn:focus-visible,
+.btn-accent:focus-visible{
+  box-shadow:0 0 0 4px rgba(255,143,179,.18);
+  border-color:rgba(255,143,179,.55);
+}
+button{cursor:pointer}
+button:hover{transform:translateY(-1px)}
+
+/* =========================
+   Native <select> dark styling (optional)
+   ========================= */
+.filter-select,
+.filters select{
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  padding-right:36px; /* space for chevron */
+  background-image:
+    linear-gradient(45deg, var(--ink) 45%, transparent 46%),
+    linear-gradient(-45deg, var(--ink) 45%, transparent 46%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 12px) 50%;
+  background-size:6px 6px, 6px 6px;
+  background-repeat:no-repeat;
+}
+.filters select option,
+.filters select optgroup{ background-color:var(--elev); color:var(--ink); }
+select::-ms-expand{ display:none; }
+
+/* =========================
+   Custom dropdown (no JS)
+   Markup pattern:
+   <details class="dd">
+     <summary>All categories</summary>
+     <ul class="dd-menu">
+       <li><button type="button" data-value="">All categories</button></li>
+       ...
+     </ul>
+   </details>
+   ========================= */
+.dd{ position:relative; display:inline-block; }
+.dd > summary{
+  list-style:none; cursor:pointer; user-select:none;
+  padding:10px 36px 10px 12px; border-radius:999px;
+  border:1px solid var(--glass-ring);
+  background:var(--panel); color:var(--ink);
+  transition:box-shadow .2s, border-color .2s, background .2s;
+}
+.dd > summary::-webkit-details-marker{ display:none; }
+.dd > summary::after{
+  content:""; position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  width:6px; height:6px;
+  background:
+    linear-gradient(45deg, var(--ink) 45%, transparent 46%),
+    linear-gradient(-45deg, var(--ink) 45%, transparent 46%);
+  background-repeat:no-repeat; background-size:6px 6px,6px 6px;
+  background-position:0 0, 0 0; /* small caret illusion */
+  rotate:90deg;
+  opacity:.9;
+}
+.dd:focus-within > summary{
+  border-color:rgba(255,143,179,.55);
+  box-shadow:0 0 0 4px rgba(255,143,179,.18);
+}
+
+/* Menu */
+.dd-menu{
+  position:absolute; inset:auto 0 auto 0; top:calc(100% + 8px);
+  background:var(--elev);
+  border:1px solid var(--glass-ring);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  padding:6px;
+  display:none; min-width:220px;
+  max-height:280px; overflow:auto;
+}
+.dd[open] .dd-menu{ display:block; }
+
+.dd-menu li{ list-style:none; }
+.dd-menu button{
+  width:100%; text-align:left;
+  padding:10px 12px; border-radius:10px;
+  border:0; background:transparent; color:var(--ink);
+  cursor:pointer; font:inherit;
+  transition:background .15s ease;
+}
+.dd-menu button:hover,
+.dd-menu button:focus{
+  background:rgba(255,143,179,.12);
+  outline:0;
+}
+
+/* Close the menu when clicking outside (focus trap hint) */
+.dd[open] > summary::before{
+  content:""; position:fixed; inset:0;
+  z-index:-1; /* allows outside click to close details in most browsers */
+}
+
+/* =========================
+   Active filter chips
+   ========================= */
+.active-filters{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 16px; }
 .filter-chip{
-  display:inline-flex;align-items:center;gap:6px;padding:6px 10px;
-  border:1px solid var(--glass-ring); border-radius:999px; background:var(--panel);
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; border:1px solid var(--glass-ring);
+  border-radius:999px; background:var(--panel);
   box-shadow:var(--shadow); font-size:12px; color:var(--ink);
 }
-.filter-chip .x{cursor:pointer;border:0;background:transparent;font-weight:700;line-height:1;color:var(--rose-400)}
-.filter-chip .x:hover{text-decoration:underline}
-.filter-chip .x:focus-visible{outline:0;box-shadow:0 0 0 3px rgba(255,143,179,.25);border-radius:6px}
+.filter-chip .x{
+  cursor:pointer; border:0; background:transparent;
+  font-weight:700; line-height:1; color:var(--rose-400);
+}
+.filter-chip .x:hover{ text-decoration:underline; }
+.filter-chip .x:focus-visible{
+  outline:0; box-shadow:0 0 0 3px rgba(255,143,179,.25);
+  border-radius:6px;
+}

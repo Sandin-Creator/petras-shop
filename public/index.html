@@ -6,17 +6,17 @@
   <title data-i18n="title">Petras Shop</title>
 
   <!-- Styles -->
-<link rel="stylesheet" href="/css/theme.css">
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/layout.css">
-<link rel="stylesheet" href="/css/forms-and-filters.css">
-<link rel="stylesheet" href="/css/components.css">
-<link rel="stylesheet" href="/css/product.css">
-<link rel="stylesheet" href="/css/modal.css">
-<link rel="stylesheet" href="/css/admin.css">
-<link rel="stylesheet" href="/css/utilities.css">
-
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/forms-and-filters.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/product.css">
+  <link rel="stylesheet" href="/css/modal.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/utilities.css">
 </head>
+
 <body>
   <a class="sr-only sr-only-focusable" href="#main" data-i18n="skip">Skip to content</a>
 
@@ -25,7 +25,7 @@
     <div class="container header-content">
       <h1 class="site-title" data-i18n="title">Petras Shop</h1>
       <nav class="site-nav" aria-label="Primary">
-        <div id="langFlags" class="lang-flags">
+        <div id="langFlags" class="lang-flags" aria-label="Language">
           <img src="/assets/flags/en.png" alt="English" data-lang="en">
           <img src="/assets/flags/sv.png" alt="Svenska" data-lang="sv">
           <img src="/assets/flags/fi.png" alt="Suomi" data-lang="fi">
@@ -48,8 +48,11 @@
     <!-- Filters -->
     <form class="filters" role="search" aria-label="Product filters" onsubmit="return false">
       <label class="sr-only" for="q" data-i18n="search">Search products</label>
-      <input id="q" name="q" type="text" class="filter-input"
-             placeholder="Search..." data-i18n="search" data-i18n-attr="placeholder" autocomplete="off" />
+      <input
+        id="q" name="q" type="text" class="filter-input"
+        placeholder="Search..." data-i18n="search" data-i18n-attr="placeholder"
+        autocomplete="off" inputmode="search"
+      />
 
       <label class="sr-only" for="category" data-i18n="category">Category</label>
       <select id="category" name="category" class="filter-select" aria-label="Category">
@@ -63,12 +66,18 @@
       </select>
 
       <label class="sr-only" for="min" data-i18n="minPrice">Minimum price</label>
-      <input id="min" name="min" type="number" class="filter-input"
-             placeholder="Min €" data-i18n="minPrice" data-i18n-attr="placeholder" inputmode="decimal" min="0" />
+      <input
+        id="min" name="min" type="number" class="filter-input"
+        placeholder="Min €" data-i18n="minPrice" data-i18n-attr="placeholder"
+        inputmode="decimal" min="0" step="0.01"
+      />
 
       <label class="sr-only" for="max" data-i18n="maxPrice">Maximum price</label>
-      <input id="max" name="max" type="number" class="filter-input"
-             placeholder="Max €" data-i18n="maxPrice" data-i18n-attr="placeholder" inputmode="decimal" min="0" />
+      <input
+        id="max" name="max" type="number" class="filter-input"
+        placeholder="Max €" data-i18n="maxPrice" data-i18n-attr="placeholder"
+        inputmode="decimal" min="0" step="0.01"
+      />
 
       <label class="sr-only" for="sort" data-i18n="sort">Sort</label>
       <select id="sort" name="sort" class="filter-select" aria-label="Sort">
@@ -114,7 +123,7 @@
       </div>
     </template>
 
-    <!-- Optional card template -->
+    <!-- Product card template -->
     <template id="product-card">
       <article class="card" data-badge="">
         <img alt="" />

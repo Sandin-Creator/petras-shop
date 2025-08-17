@@ -1,15 +1,43 @@
+/* ================================
+   Utilities & helpers
+   ================================ */
+
 /* Skip link */
-.sr-only-focusable:focus, a.sr-only-focusable:focus{
-  position:static!important; width:auto; height:auto; margin:8px; padding:8px 12px;
-  background:var(--panel); border:1px solid var(--glass-ring); border-radius:999px;
-  box-shadow:var(--shadow); color:var(--ink); z-index:1000;
+.sr-only-focusable:focus,
+a.sr-only-focusable:focus {
+  position: static !important;
+  width: auto;
+  height: auto;
+  margin: 8px;
+  padding: 8px 12px;
+  background: var(--panel-solid);   /* ✅ solid card color for light mode */
+  border: 1px solid var(--glass-ring);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  z-index: 1000;
 }
 
-/* Skeletons (on charcoal) */
-.skeleton{position:relative; overflow:hidden; background:#1c1f25}
-.skeleton::after{
-  content:""; position:absolute; inset:0;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
-  transform:translateX(-100%); animation:shimmer 1.2s infinite;
+/* Skeleton loading placeholder */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--elev);          /* ✅ theme-aware instead of hardcoded #1c1f25 */
 }
-@keyframes shimmer{to{transform:translateX(100%)}}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.18),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: shimmer 1.2s infinite;
+}
+
+@keyframes shimmer {
+  to { transform: translateX(100%); }
+}

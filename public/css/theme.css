@@ -1,18 +1,20 @@
-/* ===== Theme: Rose Charcoal (lighter than pure black) ===== */
-:root{
-  /* Neutrals */
-  --bg: #141416;               /* page background (charcoal) */
-  --bg-2: #1a1b1f;             /* alt background */
-  --panel: rgba(255,255,255,.08);
-  --panel-solid: #1e2026;      /* solid card surface */
-  --elev: #23262d;             /* elevated surface */
-  --glass-ring: rgba(255,255,255,.12);
-  --shadow: 0 10px 30px rgba(0,0,0,.35);
+/* ===== Theme: Light + Dark ===== */
 
-  /* Text */
-  --ink: #f4f5f7;
-  --ink-2: #cfd2d7;
-  --ink-3: #9aa0a6;
+/* Default = Light Theme */
+:root {
+  /* Neutrals */
+  --bg: #f9fafb;             /* page background */
+  --bg-2: #ffffff;           /* alt background */
+  --panel: rgba(0,0,0,.05);  /* subtle panel glass */
+  --panel-solid: #ffffff;    /* solid card surface */
+  --elev: #f3f4f6;           /* elevated surface */
+  --glass-ring: rgba(0,0,0,.12);
+  --shadow: 0 10px 30px rgba(0,0,0,.12);
+
+  /* Text (dark ink on light bg) */
+  --ink: #1a1b1f;
+  --ink-2: #4b5563;
+  --ink-3: #6b7280;
 
   /* Rose scale (accents) */
   --rose-50:#fff7fa; --rose-75:#fff2f6; --rose-100:#ffe7f0;
@@ -20,17 +22,34 @@
 
   /* Brand gradients */
   --grad: linear-gradient(135deg, var(--rose-400), var(--rose-500));
-  --grad-soft: linear-gradient(180deg, rgba(255,143,179,.2), transparent 55%);
+  --grad-soft: linear-gradient(180deg, rgba(255,143,179,.12), transparent 55%);
 
   /* States */
-  --success:#2dcc70; --warn:#ffcc00; --danger:#ff4d4f;
+  --success:#16a34a;
+  --warn:#eab308;
+  --danger:#dc2626;
 
   /* Radii & spacing */
   --r-sm:10px; --r-md:16px; --r-lg:22px; --r-xl:32px;
   --sp-1:6px; --sp-2:10px; --sp-3:14px; --sp-4:18px; --sp-5:26px;
 }
 
-/* Optional darker toggle */
-[data-theme="dark"]{
-  --bg:#0f1012; --panel:rgba(255,255,255,.06); --panel-solid:#191b20; --elev:#1d2026;
+/* Dark Theme */
+[data-theme="dark"] {
+  --bg: #141416;
+  --bg-2: #1a1b1f;
+  --panel: rgba(255,255,255,.08);
+  --panel-solid: #1e2026;
+  --elev: #23262d;
+  --glass-ring: rgba(255,255,255,.12);
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+
+  --ink: #f4f5f7;
+  --ink-2: #cfd2d7;
+  --ink-3: #9aa0a6;
+
+  /* States keep bright for clarity */
+  --success:#2dcc70;
+  --warn:#ffcc00;
+  --danger:#ff4d4f;
 }

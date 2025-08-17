@@ -1,5 +1,5 @@
 /* ================================
-   Page-specific overrides (Black + Rose)
+   Page-specific overrides (Black + Rose theme aware)
    ================================ */
 
 /* Accessible skip link */
@@ -10,7 +10,7 @@ a.sr-only-focusable:focus {
   height: auto;
   margin: 8px;
   padding: 8px 12px;
-  background: var(--panel); /* dark panel instead of white */
+  background: var(--panel-solid);   /* ✅ was var(--panel) */
   border: 1px solid var(--glass-ring);
   border-radius: 999px;
   box-shadow: var(--shadow);
@@ -21,7 +21,7 @@ a.sr-only-focusable:focus {
 /* Hero */
 .hero {
   padding: 20px;
-  background: var(--panel);
+  background: var(--panel-solid);   /* ✅ was var(--panel) */
   border: 1px solid var(--glass-ring);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow);
@@ -44,7 +44,7 @@ a.sr-only-focusable:focus {
   padding: 6px 10px;
   border: 1px solid var(--glass-ring);
   border-radius: 999px;
-  background: var(--panel); /* black panel */
+  background: var(--elev);   /* ✅ was var(--panel) */
   box-shadow: var(--shadow);
   font-size: 12px;
   color: var(--ink);
@@ -78,79 +78,6 @@ a.sr-only-focusable:focus {
 
 /* Product details minor spacing */
 #productDetails h2 { margin-top: 12px; }
-
-/* ================================
-   Quick View modal
-   ================================ */
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: grid;
-  place-items: center;
-}
-.modal[hidden] { display: none; }
-
-.modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,.6); /* stronger black overlay */
-  backdrop-filter: blur(3px);
-}
-
-.modal-dialog {
-  position: relative;
-  width: min(860px, 92vw);
-  max-height: 88vh;
-  overflow: hidden;
-  padding: 0;
-  border-radius: 24px;
-  background: var(--panel); /* dark panel */
-  border: 1px solid var(--glass-ring);
-  box-shadow: 0 30px 60px rgba(0,0,0,.45), var(--shadow);
-  transform: translateY(8px) scale(.98);
-  opacity: 0;
-  transition: transform .2s ease, opacity .2s ease;
-}
-.modal[aria-hidden="false"] .modal-dialog {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .modal-dialog { transition: none; transform: none; opacity: 1; }
-}
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 2;
-}
-
-#qv-body {
-  max-height: 88vh;
-  overflow: auto;
-  padding: 16px;
-  overscroll-behavior: contain;
-}
-#qv-body img {
-  display: block;
-  width: 100%;
-  height: min(44vh, 360px);
-  object-fit: cover;
-  border-radius: 24px 24px 0 0;
-  margin: 0;
-}
-#qv-body .meta {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px;
-  align-items: center;
-  margin-top: 10px;
-}
-#qv-body .meta h3 { margin: 0; }
-#qv-body .actions { display: flex; gap: 8px; margin-top: 10px; }
 
 /* Ribbons on modal too */
 .modal-dialog[data-badge]::before {
@@ -208,7 +135,7 @@ a.sr-only-focusable:focus {
   column-gap: 12px;
   padding: 8px 12px;
   border-radius: 12px;
-  background: var(--panel);
+  background: var(--panel-solid);   /* ✅ was var(--panel) */
   border: 1px solid var(--glass-ring);
   box-shadow: none;
   transform: none;
@@ -321,6 +248,7 @@ body.login-page main {
   color: var(--ink);
 }
 
+/* Language flags */
 .lang-flags {
   display: flex;
   gap: 8px;

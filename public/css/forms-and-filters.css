@@ -1,135 +1,274 @@
-/* =========================
-   Filters (pill inputs)
-   ========================= */
-.filters{
-  display:flex; flex-wrap:wrap; gap:10px; margin:24px 0;
-  position:relative; z-index:5; /* keep above cards when menus open */
+/* =======================================================
+   Premium Filter Bar — Theme aware, light + dark safe
+   ======================================================= */
+
+/* Container */
+.filters {
+  display: flex;
+  flex-wrap: wrap; /* desktop: multi-row */
+  align-items: center;
+  gap: 14px 10px; /* row / column gap */
+  margin: 20px 0;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--panel-solid);  /* ✅ solid surface for light mode */
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-ring);
+  box-shadow: var(--shadow);
+  position: relative;
+  z-index: 5;
 }
 
+/* Mobile: one-row scroller */
+@media (max-width: 640px) {
+  .filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding: 12px;
+  }
+  .filters > * {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+  .filters::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Shared look for controls */
 .filter-input,
 .filter-select,
-button{
-  padding:10px 12px; border-radius:999px;
-  border:1px solid var(--glass-ring);
-  background:var(--panel); color:var(--ink);
-  outline:0;
-  transition:box-shadow .2s, transform .12s, background .2s, border-color .2s;
+.filters button,
+.checkbox-inline span {
+  padding: 10px 14px;
+  min-height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-ring);
+  background: var(--elev);    /* ✅ lighter surface for light mode */
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  outline: 0;
+  transition: transform .18s ease, box-shadow .25s,
+              border-color .25s, background .25s;
 }
+.filters button { cursor: pointer; }
+
 .filter-input:focus,
 .filter-select:focus,
-.btn:focus-visible,
-.btn-accent:focus-visible{
-  box-shadow:0 0 0 4px rgba(255,143,179,.18);
-  border-color:rgba(255,143,179,.55);
+.filters button:hover {
+  transform: translateY(-1px);
+  border-color: var(--rose-400);
+  box-shadow: 0 0 0 3px rgba(255,143,179,.18);
+  background: linear-gradient(
+    0deg,
+    rgba(255,143,179,.12),
+    rgba(255,143,179,.12)
+  ), var(--elev);
 }
-button{cursor:pointer}
-button:hover{transform:translateY(-1px)}
 
-/* =========================
-   Native <select> dark styling (optional)
-   ========================= */
+/* Layout (no HTML changes) */
+#q { flex: 1 1 100%; min-width: 260px; }
+#category { flex: 0 1 220px; min-width: 200px; }
+#min, #max { flex: 0 1 140px; text-align: right; }
+#sort { flex: 0 1 210px; margin-left: auto; }
+.checkbox-inline,
+.filters button { order: 20; } /* chips go to row 3 */
+
+/* Row separators (desktop only) */
+.filters::before,
+.filters::after {
+  content: "";
+  position: absolute;
+  left: 18px; right: 18px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0,0,0,.08),
+    transparent
+  );
+  pointer-events: none;
+}
+@media (prefers-color-scheme: light) {
+  .filters::before,
+  .filters::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(0,0,0,.06),
+      transparent
+    );
+  }
+}
+.filters::before { top: calc(18px + 42px + 14px); }
+.filters::after  { top: calc(18px + 42px + 14px + 42px + 14px); }
+@media (max-width: 640px) {
+  .filters::before,
+  .filters::after { display: none; }
+}
+
+/* Checkbox chips */
+.checkbox-inline {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+.checkbox-inline input { display: none; }
+.checkbox-inline span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.checkbox-inline input:checked + span {
+  background: linear-gradient(
+    0deg,
+    rgba(255,143,179,.22),
+    rgba(255,143,179,.22)
+  ), var(--elev);
+  color: var(--ink);
+  border-color: rgba(255,143,179,.7);
+  box-shadow: 0 0 10px rgba(255,143,179,.35);
+}
+
+/* Selects (caret via CSS gradients) */
 .filter-select,
-.filters select{
-  appearance:none; -webkit-appearance:none; -moz-appearance:none;
-  padding-right:36px; /* space for chevron */
+.filters select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 34px;
   background-image:
-    linear-gradient(45deg, var(--ink) 45%, transparent 46%),
-    linear-gradient(-45deg, var(--ink) 45%, transparent 46%);
-  background-position:
-    calc(100% - 18px) 50%,
-    calc(100% - 12px) 50%;
-  background-size:6px 6px, 6px 6px;
-  background-repeat:no-repeat;
+    linear-gradient(45deg, currentColor 45%, transparent 46%),
+    linear-gradient(-45deg, currentColor 45%, transparent 46%);
+  background-position: right 16px center, right 10px center;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  color: var(--ink);
 }
 .filters select option,
-.filters select optgroup{ background-color:var(--elev); color:var(--ink); }
-select::-ms-expand{ display:none; }
+.filters select optgroup {
+  background: var(--panel-solid);   /* ✅ better than panel */
+  color: var(--ink);
+}
+select::-ms-expand { display: none; }
 
-/* =========================
-   Custom dropdown (no JS)
-   Markup pattern:
-   <details class="dd">
-     <summary>All categories</summary>
-     <ul class="dd-menu">
-       <li><button type="button" data-value="">All categories</button></li>
-       ...
-     </ul>
-   </details>
-   ========================= */
-.dd{ position:relative; display:inline-block; }
-.dd > summary{
-  list-style:none; cursor:pointer; user-select:none;
-  padding:10px 36px 10px 12px; border-radius:999px;
-  border:1px solid var(--glass-ring);
-  background:var(--panel); color:var(--ink);
-  transition:box-shadow .2s, border-color .2s, background .2s;
+/* Dropdown (<details>) */
+.dd { position: relative; display: inline-block; }
+.dd > summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  padding: 10px 34px 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-ring);
+  background: var(--elev);
+  color: var(--ink);
+  transition: box-shadow .25s, border-color .25s, background .25s;
 }
-.dd > summary::-webkit-details-marker{ display:none; }
-.dd > summary::after{
-  content:""; position:absolute; right:12px; top:50%; transform:translateY(-50%);
-  width:6px; height:6px;
-  background:
-    linear-gradient(45deg, var(--ink) 45%, transparent 46%),
-    linear-gradient(-45deg, var(--ink) 45%, transparent 46%);
-  background-repeat:no-repeat; background-size:6px 6px,6px 6px;
-  background-position:0 0, 0 0; /* small caret illusion */
-  rotate:90deg;
-  opacity:.9;
+.dd > summary::-webkit-details-marker { display: none; }
+.dd > summary::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px; height: 6px;
+  background-image:
+    linear-gradient(45deg, currentColor 45%, transparent 46%),
+    linear-gradient(-45deg, currentColor 45%, transparent 46%);
+  background-position: center;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  opacity: .9;
+  rotate: 90deg;
 }
-.dd:focus-within > summary{
-  border-color:rgba(255,143,179,.55);
-  box-shadow:0 0 0 4px rgba(255,143,179,.18);
+.dd:focus-within > summary {
+  border-color: var(--rose-400);
+  box-shadow: 0 0 0 3px rgba(255,143,179,.18);
+}
+.dd-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: var(--panel-solid);  /* ✅ */
+  border: 1px solid var(--glass-ring);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 6px;
+  min-width: 220px;
+  max-height: 260px;
+  overflow: auto;
+  z-index: 20;
+  display: none;
+}
+.dd[open] .dd-menu { display: block; }
+.dd[open] > summary::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
 }
 
-/* Menu */
-.dd-menu{
-  position:absolute; inset:auto 0 auto 0; top:calc(100% + 8px);
-  background:var(--elev);
-  border:1px solid var(--glass-ring);
-  border-radius:14px;
-  box-shadow:var(--shadow);
-  padding:6px;
-  display:none; min-width:220px;
-  max-height:280px; overflow:auto;
-}
-.dd[open] .dd-menu{ display:block; }
-
-.dd-menu li{ list-style:none; }
-.dd-menu button{
-  width:100%; text-align:left;
-  padding:10px 12px; border-radius:10px;
-  border:0; background:transparent; color:var(--ink);
-  cursor:pointer; font:inherit;
-  transition:background .15s ease;
+/* Dropdown items */
+.dd-menu li { list-style: none; }
+.dd-menu button {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transition: background .15s ease;
 }
 .dd-menu button:hover,
-.dd-menu button:focus{
-  background:rgba(255,143,179,.12);
-  outline:0;
+.dd-menu button:focus {
+  background: rgba(255,143,179,.14);
+  outline: 0;
 }
 
-/* Close the menu when clicking outside (focus trap hint) */
-.dd[open] > summary::before{
-  content:""; position:fixed; inset:0;
-  z-index:-1; /* allows outside click to close details in most browsers */
+/* Active filter summary chips */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
 }
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: var(--elev);   /* ✅ instead of panel */
+  border: 1px solid rgba(255,143,179,.4);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+.filter-chip .x {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--rose-400);
+}
+.filter-chip .x:hover { text-decoration: underline; }
 
-/* =========================
-   Active filter chips
-   ========================= */
-.active-filters{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 16px; }
-.filter-chip{
-  display:inline-flex; align-items:center; gap:6px;
-  padding:6px 10px; border:1px solid var(--glass-ring);
-  border-radius:999px; background:var(--panel);
-  box-shadow:var(--shadow); font-size:12px; color:var(--ink);
-}
-.filter-chip .x{
-  cursor:pointer; border:0; background:transparent;
-  font-weight:700; line-height:1; color:var(--rose-400);
-}
-.filter-chip .x:hover{ text-decoration:underline; }
-.filter-chip .x:focus-visible{
-  outline:0; box-shadow:0 0 0 3px rgba(255,143,179,.25);
-  border-radius:6px;
+/* Accessibility focus ring */
+.filters .btn:focus-visible,
+.filters .btn-accent:focus-visible,
+.filter-input:focus-visible,
+.filter-select:focus-visible,
+.checkbox-inline span:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(255,143,179,.22);
+  border-color: rgba(255,143,179,.6);
 }

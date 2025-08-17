@@ -1,28 +1,99 @@
-/* Header: translucent charcoal glass, lighter than black */
+/* =========================
+   Site Header (light + dark aware)
+   ========================= */
 .site-header{
-  position:sticky; top:0; z-index:50;
-  backdrop-filter:saturate(120%) blur(8px);
-  background: linear-gradient(180deg, rgba(30,32,38,.85), rgba(30,32,38,.65));
-  border-bottom:1px solid var(--glass-ring);
-  box-shadow:0 8px 20px rgba(0,0,0,.45);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: saturate(120%) blur(8px);
+  background: color-mix(in oklab, var(--bg) 85%, transparent);
+  border-bottom: 1px solid var(--glass-ring);
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  transition: background .3s ease, box-shadow .3s ease;
 }
-.header-content{display:flex; align-items:center; justify-content:space-between; padding:18px var(--sp-4)}
+[data-theme="dark"] .site-header{
+  background: linear-gradient(180deg, rgba(30,32,38,.85), rgba(30,32,38,.65));
+  box-shadow: 0 8px 20px rgba(0,0,0,.45);
+}
 
+.header-content{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px var(--sp-4);
+  gap: 16px;
+}
+
+/* =========================
+   Site Title
+   ========================= */
 .site-title{
-  margin:0; font-size:clamp(26px,3.2vw,40px); font-weight:800;
+  margin: 0;
+  font-size: clamp(26px, 3.2vw, 40px);
+  font-weight: 800;
   background: linear-gradient(90deg, #c7b2bb 0%, var(--rose-500) 55%, #c7b2bb 100%);
-  -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:.3px; position:relative;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: .3px;
+  position: relative;
 }
 .site-title::after{
-  content:""; position:absolute; left:0; bottom:-6px; height:3px; width:56%;
-  background: var(--grad); border-radius:999px; filter:saturate(120%);
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 3px;
+  width: 56%;
+  background: var(--grad);
+  border-radius: 999px;
+  filter: saturate(120%);
 }
 
-/* Header nav chips */
+/* =========================
+   Header Nav Links
+   ========================= */
 .site-nav .nav-link{
-  padding:8px 12px; border:1px solid var(--glass-ring);
-  border-radius:999px; background:var(--panel);
-  color:var(--ink);
-  transition:transform .15s ease, background .2s ease, box-shadow .2s ease;
+  padding: 6px 10px;
+  border: 1px solid var(--glass-ring);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--ink);
+  transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
 }
-.site-nav .nav-link:hover{transform:translateY(-2px); box-shadow:var(--shadow)}
+.site-nav .nav-link:hover{
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+/* Language flags layout */
+.lang-flags{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.lang-flags img{
+  width: 22px; height: 16px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  cursor: pointer;
+}
+
+/* =========================
+   Desktop/Mobile visibility helpers
+   ========================= */
+.desktop-only{ display: none; }
+.mobile-only{ display: block; }
+
+@media (min-width: 900px){
+  .desktop-only{ display: block; }
+  .mobile-only{ display: none; }
+}
+
+/* =========================
+   Mobile Header/Nav
+   ========================= */
+@media (max-width: 900px){
+  .header-content{ flex-wrap: wrap; gap: 12px; }
+  .site-nav{ width: 100%; display: none; } /* revealed inside .mnav */
+}

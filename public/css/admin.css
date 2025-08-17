@@ -1,4 +1,8 @@
-/* === Admin Interaction Hardening (scoped to admin page) === */
+/* =======================================================
+   Admin — Theme-aware, light/dark safe
+   ======================================================= */
+
+/* Hardening (keep interactivity normal inside cards) */
 body.admin-page *::before,
 body.admin-page *::after { pointer-events: none !important; }
 body.admin-page::before,
@@ -10,7 +14,6 @@ body.admin-page main.container::after {
   pointer-events: none !important;
 }
 
-/* Ensure admin UI stays above */
 body.admin-page main.container,
 body.admin-page .adminbar,
 body.admin-page .admin-grid,
@@ -19,8 +22,6 @@ body.admin-page #adminList {
   position: relative;
   z-index: 10;
 }
-
-/* Prevent transforms creating offset hitboxes */
 html,
 body.admin-page,
 body.admin-page main.container { transform: none !important; filter: none !important; }
@@ -30,7 +31,9 @@ body.admin-page main.container { isolation: isolate; }
 body.admin-page .card,
 body.admin-page .card * { pointer-events: auto; }
 
-/* === Admin Layout === */
+/* =======================================================
+   Layout
+   ======================================================= */
 .adminbar {
   display: flex;
   justify-content: space-between;
@@ -38,18 +41,15 @@ body.admin-page .card * { pointer-events: auto; }
   margin-bottom: 16px;
 }
 
-/* Two-column layout: left = New Product, right = Products */
 .admin-grid {
   display: grid;
-  grid-template-columns: 420px minmax(0, 1fr); /* adjust 420px to taste */
+  grid-template-columns: 420px minmax(0, 1fr);
   gap: 24px;
   align-items: start;
 }
-
-/* Cards fill their column */
 .admin-grid > .card { width: 100%; }
 
-/* Rows inside product list card */
+/* Row utility (right card header rows etc.) */
 .row {
   display: flex;
   justify-content: space-between;
@@ -59,50 +59,79 @@ body.admin-page .card * { pointer-events: auto; }
   color: var(--ink);
 }
 
-/* === Admin Form (New Product) === */
-.form-row {
-  display: flex;
-  flex-direction: column; /* stacked fields */
-  gap: 12px;
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-}
+/* Responsive */
+@media (max-width: 1000px) { .admin-grid { grid-template-columns: 1fr; } }
+@media (max-width: 720px)  { .adminbar { flex-direction: column; gap: 10px; } }
+@media (max-width: 640px)  { .row, .upload-row { flex-wrap: wrap; gap: 12px; } }
 
-.card input[type="text"],
-.card input[type="number"],
-.card input[type="url"],
-.card input[type="file"],
-.card select,
-.card textarea {
+/* =======================================================
+   Form — New Product (LEFT) + Filters (RIGHT)
+   ======================================================= */
+.form-row { display: flex; flex-direction: column; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+
+/* Universal controls inside admin cards
+   (catch ALL inputs except radios/checkboxes/range) */
+.card input:not([type="radio"]):not([type="checkbox"]):not([type="range"]),
+.card textarea,
+.card select {
   width: 100%;
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid var(--glass-ring);
-  background: var(--panel);
+  background: var(--elev);       /* ✅ lighter in light mode */
   color: var(--ink);
+  font-size: 14px;
+  line-height: 1.4;
   outline: 0;
-  transition: box-shadow .2s, border-color .2s, transform .12s;
+  transition: box-shadow .2s, border-color .2s, transform .12s, background .2s;
 }
 
+/* File input (kept explicit for clarity) */
+.card input[type="file"] {
+  padding: 8px 10px;
+  background: var(--elev);
+  color: var(--ink);
+  border: 1px solid var(--glass-ring);
+  border-radius: 12px;
+}
+
+.card input::placeholder,
+.card textarea::placeholder { color: rgba(128,128,128,.7); }
+
 .card input:focus,
-.card select:focus,
-.card textarea:focus {
+.card textarea:focus,
+.card select:focus {
   border-color: rgba(255,143,179,.6);
   box-shadow: 0 0 0 4px rgba(255,143,179,.18);
+  background: var(--panel);      /* slight lift on focus (theme-aware) */
+}
+
+/* Disabled state */
+.card input:disabled,
+.card textarea:disabled,
+.card select:disabled {
+  background: var(--panel);
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* Custom caret for selects (theme-aware, no svg data url issues) */
+.card select {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  padding-right: 36px;
+  background-image:
+    linear-gradient(45deg, currentColor 45%, transparent 46%),
+    linear-gradient(-45deg, currentColor 45%, transparent 46%);
+  background-position: right 16px center, right 10px center;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
 }
 
 /* Upload row */
-.upload-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
+.upload-row { display: flex; gap: 8px; align-items: center; }
 
-/* Progress + status */
+/* Progress */
 progress {
   appearance: none;
   height: 10px;
@@ -115,11 +144,33 @@ progress::-webkit-progress-bar { background: var(--elev); }
 progress::-webkit-progress-value { background: var(--grad); }
 progress::-moz-progress-bar { background: var(--grad); }
 
-/* Responsive: stack on smaller screens */
-@media (max-width: 1000px) {
-  .admin-grid { grid-template-columns: 1fr; }
+/* =======================================================
+   Right Card: Products header controls (.filters)
+   ======================================================= */
+.card .filters input:not([type="radio"]):not([type="checkbox"]):not([type="range"]),
+.card .filters select {
+  min-height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--glass-ring);
+  background: var(--elev);   /* ✅ fixes dark search in light mode */
+  color: var(--ink);
+  padding: 8px 12px;
 }
 
-@media (max-width: 720px) {
-  .adminbar { flex-direction: column; gap: 10px; }
+.card .filters input:not([type="radio"]):not([type="checkbox"]):not([type="range"]):focus,
+.card .filters select:focus {
+  border-color: rgba(255,143,179,.6);
+  box-shadow: 0 0 0 3px rgba(255,143,179,.18);
+  background: var(--panel);
+}
+
+.card .filters select {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  padding-right: 34px;
+  background-image:
+    linear-gradient(45deg, currentColor 45%, transparent 46%),
+    linear-gradient(-45deg, currentColor 45%, transparent 46%);
+  background-position: right 16px center, right 10px center;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
 }

@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="/css/modal.css">
   <link rel="stylesheet" href="/css/admin.css">
   <link rel="stylesheet" href="/css/utilities.css">
+  <link rel="stylesheet" href="/css/mobile.css">
+  <meta name="color-scheme" content="light dark">
 </head>
 
 <body>
@@ -24,13 +26,30 @@
   <header class="site-header" role="banner">
     <div class="container header-content">
       <h1 class="site-title" data-i18n="title">Petras Shop</h1>
-      <nav class="site-nav" aria-label="Primary">
+
+      <!-- Desktop nav (always visible on desktop) -->
+      <nav class="site-nav desktop-only" aria-label="Primary">
         <div id="langFlags" class="lang-flags" aria-label="Language">
           <img src="/assets/flags/en.png" alt="English" data-lang="en">
           <img src="/assets/flags/sv.png" alt="Svenska" data-lang="sv">
           <img src="/assets/flags/fi.png" alt="Suomi" data-lang="fi">
         </div>
       </nav>
+
+      <!-- Mobile menu (hamburger) -->
+      <details class="mnav mobile-only">
+        <summary class="nav-link" aria-label="Menu">☰</summary>
+        <nav class="site-nav" aria-label="Primary">
+          <div id="langFlagsMobile" class="lang-flags" aria-label="Language">
+            <img src="/assets/flags/en.png" alt="English" data-lang="en">
+            <img src="/assets/flags/sv.png" alt="Svenska" data-lang="sv">
+            <img src="/assets/flags/fi.png" alt="Suomi" data-lang="fi">
+          </div>
+        </nav>
+      </details>
+
+      <!-- Theme toggle button -->
+      <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">🌙</button>
     </div>
   </header>
 
@@ -48,11 +67,9 @@
     <!-- Filters -->
     <form class="filters" role="search" aria-label="Product filters" onsubmit="return false">
       <label class="sr-only" for="q" data-i18n="search">Search products</label>
-      <input
-        id="q" name="q" type="text" class="filter-input"
+      <input id="q" name="q" type="text" class="filter-input"
         placeholder="Search..." data-i18n="search" data-i18n-attr="placeholder"
-        autocomplete="off" inputmode="search"
-      />
+        autocomplete="off" inputmode="search" />
 
       <label class="sr-only" for="category" data-i18n="category">Category</label>
       <select id="category" name="category" class="filter-select" aria-label="Category">
@@ -66,18 +83,14 @@
       </select>
 
       <label class="sr-only" for="min" data-i18n="minPrice">Minimum price</label>
-      <input
-        id="min" name="min" type="number" class="filter-input"
+      <input id="min" name="min" type="number" class="filter-input"
         placeholder="Min €" data-i18n="minPrice" data-i18n-attr="placeholder"
-        inputmode="decimal" min="0" step="0.01"
-      />
+        inputmode="decimal" min="0" step="0.01" />
 
       <label class="sr-only" for="max" data-i18n="maxPrice">Maximum price</label>
-      <input
-        id="max" name="max" type="number" class="filter-input"
+      <input id="max" name="max" type="number" class="filter-input"
         placeholder="Max €" data-i18n="maxPrice" data-i18n-attr="placeholder"
-        inputmode="decimal" min="0" step="0.01"
-      />
+        inputmode="decimal" min="0" step="0.01" />
 
       <label class="sr-only" for="sort" data-i18n="sort">Sort</label>
       <select id="sort" name="sort" class="filter-select" aria-label="Sort">
@@ -159,15 +172,14 @@
         const res = await fetch("/api/auth/me", { credentials: "include" });
         const data = await res.json();
         if (data?.user?.role === "ADMIN") {
-          const nav = document.querySelector(".site-nav");
-          if (nav) {
+          document.querySelectorAll(".site-nav").forEach(nav => {
             const a = document.createElement("a");
             a.href = "/admin";
             a.className = "nav-link";
             a.dataset.i18n = "admin";
             a.textContent = "Admin";
             nav.appendChild(a);
-          }
+          });
         }
       } catch {}
     })();
@@ -180,5 +192,6 @@
     import { initLang } from "/js/i18n.js";
     initLang();
   </script>
+  <script src="/js/theme.js" defer></script>
 </body>
 </html>

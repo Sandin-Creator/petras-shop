@@ -2,38 +2,59 @@
 (() => {
   const root = document.documentElement;
   const btn  = document.getElementById("themeToggle");
-  if (!btn) return;
+  if (!btn) return; // no toggle button present
 
-  // Helper: apply & reflect current state
-  function apply(theme){
-    if (theme) {
-      root.setAttribute("data-theme", theme);
-      localStorage.setItem("theme", theme);
-    } else {
-      root.removeAttribute("data-theme");
-      localStorage.removeItem("theme");
-    }
-    const dark = (root.getAttribute("data-theme") || "").toLowerCase() === "dark";
+  const STORAGE_KEY = "theme";
+
+  /** Update DOM + storage */
+  function setTheme(theme) {
+    root.setAttribute("data-theme", theme);
+    localStorage.setItem(STORAGE_KEY, theme);
+    updateButton(theme);
+  }
+
+  /** Remove stored theme (system preference takes over) */
+  function clearTheme() {
+    root.removeAttribute("data-theme");
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  /** Reflect current theme state in toggle button */
+  function updateButton(theme) {
+    const dark = theme === "dark";
     btn.setAttribute("aria-pressed", String(dark));
     btn.textContent = dark ? "☀️" : "🌙";
   }
 
-  // On load: saved -> use; else system -> maybe dark; else light
-  const saved = localStorage.getItem("theme");
-  if (saved) {
-    apply(saved);
-  } else {
+  /** Initialize on load */
+  function initTheme() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      setTheme(saved);
+      return;
+    }
+
+    // no saved theme → follow system
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-    apply(prefersDark.matches ? "dark" : "light");
-    // keep in sync with system if user never toggles
-    prefersDark.addEventListener?.("change", e => {
-      if (!localStorage.getItem("theme")) apply(e.matches ? "dark" : "light");
+    const systemTheme = prefersDark.matches ? "dark" : "light";
+    setTheme(systemTheme);
+
+    // keep in sync if user never toggled manually
+    prefersDark.addEventListener("change", e => {
+      if (!localStorage.getItem(STORAGE_KEY)) {
+        setTheme(e.matches ? "dark" : "light");
+      }
     });
   }
 
-  // Toggle on click
-  btn.addEventListener("click", () => {
+  /** Toggle handler */
+  function toggleTheme() {
     const current = root.getAttribute("data-theme") || "light";
-    apply(current === "dark" ? "light" : "dark");
-  });
+    const next = current === "dark" ? "light" : "dark";
+    setTheme(next);
+  }
+
+  // Init + bind
+  initTheme();
+  btn.addEventListener("click", toggleTheme);
 })();

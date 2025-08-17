@@ -27,28 +27,40 @@
     <div class="container header-content">
       <h1 class="site-title" data-i18n="title">Petras Shop</h1>
 
-      <!-- Desktop nav (always visible on desktop) -->
+      <!-- Desktop nav -->
       <nav class="site-nav desktop-only" aria-label="Primary">
         <div id="langFlags" class="lang-flags" aria-label="Language">
-          <img src="/assets/flags/en.png" alt="English" data-lang="en">
-          <img src="/assets/flags/sv.png" alt="Svenska" data-lang="sv">
-          <img src="/assets/flags/fi.png" alt="Suomi" data-lang="fi">
+          <button type="button" class="lang-flag" data-lang="en" aria-label="English">
+            <img src="/assets/flags/en.png" alt="English">
+          </button>
+          <button type="button" class="lang-flag" data-lang="sv" aria-label="Svenska">
+            <img src="/assets/flags/sv.png" alt="Svenska">
+          </button>
+          <button type="button" class="lang-flag" data-lang="fi" aria-label="Suomi">
+            <img src="/assets/flags/fi.png" alt="Suomi">
+          </button>
         </div>
       </nav>
 
-      <!-- Mobile menu (hamburger) -->
+      <!-- Mobile menu -->
       <details class="mnav mobile-only">
         <summary class="nav-link" aria-label="Menu">☰</summary>
         <nav class="site-nav" aria-label="Primary">
           <div id="langFlagsMobile" class="lang-flags" aria-label="Language">
-            <img src="/assets/flags/en.png" alt="English" data-lang="en">
-            <img src="/assets/flags/sv.png" alt="Svenska" data-lang="sv">
-            <img src="/assets/flags/fi.png" alt="Suomi" data-lang="fi">
+            <button type="button" class="lang-flag" data-lang="en" aria-label="English">
+              <img src="/assets/flags/en.png" alt="English">
+            </button>
+            <button type="button" class="lang-flag" data-lang="sv" aria-label="Svenska">
+              <img src="/assets/flags/sv.png" alt="Svenska">
+            </button>
+            <button type="button" class="lang-flag" data-lang="fi" aria-label="Suomi">
+              <img src="/assets/flags/fi.png" alt="Suomi">
+            </button>
           </div>
         </nav>
       </details>
 
-      <!-- Theme toggle button -->
+      <!-- Theme toggle -->
       <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">🌙</button>
     </div>
   </header>
@@ -67,9 +79,17 @@
     <!-- Filters -->
     <form class="filters" role="search" aria-label="Product filters" onsubmit="return false">
       <label class="sr-only" for="q" data-i18n="search">Search products</label>
-      <input id="q" name="q" type="text" class="filter-input"
-        placeholder="Search..." data-i18n="search" data-i18n-attr="placeholder"
-        autocomplete="off" inputmode="search" />
+      <input
+        id="q"
+        name="q"
+        type="text"
+        class="filter-input"
+        placeholder="Search..."
+        data-i18n="search"
+        data-i18n-attr="placeholder"
+        autocomplete="off"
+        inputmode="search"
+      />
 
       <label class="sr-only" for="category" data-i18n="category">Category</label>
       <select id="category" name="category" class="filter-select" aria-label="Category">
@@ -83,14 +103,32 @@
       </select>
 
       <label class="sr-only" for="min" data-i18n="minPrice">Minimum price</label>
-      <input id="min" name="min" type="number" class="filter-input"
-        placeholder="Min €" data-i18n="minPrice" data-i18n-attr="placeholder"
-        inputmode="decimal" min="0" step="0.01" />
+      <input
+        id="min"
+        name="min"
+        type="number"
+        class="filter-input"
+        placeholder="Min €"
+        data-i18n="minPrice"
+        data-i18n-attr="placeholder"
+        inputmode="decimal"
+        min="0"
+        step="0.01"
+      />
 
       <label class="sr-only" for="max" data-i18n="maxPrice">Maximum price</label>
-      <input id="max" name="max" type="number" class="filter-input"
-        placeholder="Max €" data-i18n="maxPrice" data-i18n-attr="placeholder"
-        inputmode="decimal" min="0" step="0.01" />
+      <input
+        id="max"
+        name="max"
+        type="number"
+        class="filter-input"
+        placeholder="Max €"
+        data-i18n="maxPrice"
+        data-i18n-attr="placeholder"
+        inputmode="decimal"
+        min="0"
+        step="0.01"
+      />
 
       <label class="sr-only" for="sort" data-i18n="sort">Sort</label>
       <select id="sort" name="sort" class="filter-select" aria-label="Sort">
@@ -102,15 +140,22 @@
 
       <!-- Toggles -->
       <label class="checkbox-inline">
-        <input type="checkbox" id="onlySale" /> <span data-i18n="onlySale">On sale</span>
+        <input type="checkbox" id="onlySale" />
+        <span data-i18n="onlySale">On sale</span>
       </label>
+
       <label class="checkbox-inline">
-        <input type="checkbox" id="inStock" /> <span data-i18n="inStock">In stock only</span>
+        <input type="checkbox" id="inStock" />
+        <span data-i18n="inStock">In stock only</span>
       </label>
 
       <!-- View density + Reset -->
-      <button id="densityToggle" type="button" class="btn" title="Toggle compact view" data-i18n="compact">Compact view</button>
-      <button id="clearFilters" type="button" class="btn" data-i18n="clear">Clear all</button>
+      <button id="densityToggle" type="button" class="btn" title="Toggle compact view" data-i18n="compact">
+        Compact view
+      </button>
+      <button id="clearFilters" type="button" class="btn" data-i18n="clear">
+        Clear all
+      </button>
     </form>
 
     <!-- Results meta -->
@@ -193,5 +238,51 @@
     initLang();
   </script>
   <script src="/js/theme.js" defer></script>
+
+  <!-- Flag language picker wiring -->
+  <script>
+  (function(){
+    const blocks = [
+      document.getElementById('langFlags'),
+      document.getElementById('langFlagsMobile')
+    ].filter(Boolean);
+    if (blocks.length === 0) return;
+
+    const STORAGE_KEY = 'lang';
+    const params = new URLSearchParams(location.search);
+    const currentLang = params.get('lang') || localStorage.getItem(STORAGE_KEY) || 'en';
+
+    function markActive(code){
+      blocks.forEach(b=>{
+        b.querySelectorAll('.lang-flag').forEach(btn=>{
+          btn.classList.toggle('active', btn.dataset.lang === code);
+        });
+      });
+    }
+
+    function applyLang(code){
+      if (typeof window.changeLanguage === 'function') {
+        window.changeLanguage(code);
+        try{ localStorage.setItem(STORAGE_KEY, code); }catch(e){}
+        markActive(code);
+        return;
+      }
+      try{ localStorage.setItem(STORAGE_KEY, code); }catch(e){}
+      const p = new URLSearchParams(location.search);
+      p.set('lang', code);
+      location.search = p.toString();
+    }
+
+    blocks.forEach(b=>{
+      b.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.lang-flag');
+        if (!btn) return;
+        applyLang(btn.dataset.lang);
+      });
+    });
+
+    markActive(currentLang);
+  })();
+  </script>
 </body>
 </html>

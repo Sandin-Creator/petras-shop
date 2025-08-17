@@ -272,3 +272,52 @@ select::-ms-expand { display: none; }
   box-shadow: 0 0 0 3px rgba(255,143,179,.22);
   border-color: rgba(255,143,179,.6);
 }
+
+/* ===== Mobile: stacked, no sideways scroll ===== */
+@media (max-width: 640px){
+  /* Let the bar grow vertically instead of side-scrolling */
+  .filters{
+    flex-wrap: wrap;
+    overflow-x: visible;
+    gap: 10px;                /* tighten spacing a bit */
+    padding: 12px;
+  }
+
+  /* Search input takes the first row full width */
+  #q{
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  /* Category, Min, Max, Sort: 2 columns */
+  #category, #min, #max, #sort{
+    flex: 1 1 calc(50% - 6px);
+    min-width: calc(50% - 6px);
+    margin-left: 0;           /* override desktop push on #sort */
+  }
+
+  /* Toggle chips & buttons: take full width and wrap under controls */
+  .checkbox-inline,
+  .filters button{
+    order: 30;                /* ensure they appear after inputs/selects */
+    flex: 1 1 calc(50% - 6px);
+    min-width: calc(50% - 6px);
+  }
+
+  /* If you want chips one per row, uncomment next two lines */
+  /* .checkbox-inline, .filters button{ flex-basis: 100%; min-width:100%; } */
+
+  /* Drop the row divider lines on small screens */
+  .filters::before, .filters::after{ display:none; }
+
+  /* Make custom <details> dropdowns full width and touch-friendly */
+  .dd{ width:100%; }
+  .dd > summary{ width:100%; min-height:44px; }
+  .dd-menu{
+    left: 0; right: 0;
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
+    z-index: 999;
+  }
+}

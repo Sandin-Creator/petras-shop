@@ -97,7 +97,14 @@ export function rowEditor(p) {
         <!-- inline upload controls -->
         <div class="upload-inline" style="display:flex;align-items:center;gap:8px">
           <input type="file" id="editFile-${p.id}" accept="image/*" />
+          <!-- background removal toggle for Edit -->
+          <label style="display:inline-flex;align-items:center;gap:6px">
+            <input type="checkbox" id="editBg-${p.id}" checked>
+            <span>Remove background</span>
+          </label>
           <button class="btn" id="editUpload-${p.id}">Upload</button>
+          <!-- NEW: choose an existing file from /uploads -->
+          <button class="btn" id="editChoose-${p.id}">Choose existing</button>
           <small style="opacity:.7">Uploads save to /uploads and set Image URL</small>
         </div>
 

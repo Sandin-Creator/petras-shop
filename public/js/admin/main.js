@@ -18,6 +18,7 @@ const newStock = document.getElementById("newStock");
 
 const imageFile = document.getElementById("imageFile");
 const uploadBtn = document.getElementById("uploadBtn");
+const chooseExistingBtn = document.getElementById("chooseExistingBtn"); // NEW
 const imageUrlInput = document.getElementById("imageUrl");
 const preview = document.getElementById("preview");
 
@@ -48,14 +49,105 @@ uploadBtn?.addEventListener("click", async () => {
   if (!file.type.startsWith("image/")) return toast("Only images are allowed");
   if (file.size > 5 * 1024 * 1024) return toast("Image must be under 5MB");
 
+  const removeBg = !!document.getElementById("bgToggleNew")?.checked; // NEW
   try {
-    const { url } = await api.uploadImage(file);
+    const resp = await api.uploadImage(file, { bg: removeBg }); // { url, bgRemoved?, reason? }
+    const { url, bgRemoved } = resp || {};
     imageUrlInput.value = url;
     renderPreview(preview, url);
-    toast("Image uploaded");
+    if (removeBg) {
+      toast(bgRemoved ? "Image uploaded (background removed)" : "Image uploaded (kept original background)");
+    } else {
+      toast("Image uploaded");
+    }
   } catch (err) {
     toast(err.message || "Upload failed");
   }
+});
+
+/* ---------- Image chooser (Create + Edit) ---------- */
+function openModal(modal) {
+  modal.removeAttribute("hidden");
+  modal.setAttribute("aria-hidden", "false");
+  modal.classList.add("open"); // <-- helps themes that use .open to display
+}
+function closeModal(modal) {
+  modal.setAttribute("hidden", "");
+  modal.setAttribute("aria-hidden", "true");
+  modal.classList.remove("open");
+}
+async function openImageChooser(targetInputId, targetPreviewId) {
+  const modal = document.getElementById("imageChooser");
+  const grid  = document.getElementById("imageChooserGrid");
+  if (!modal || !grid) return toast("Image chooser not available");
+
+  openModal(modal);
+  grid.innerHTML = "<p>Loading…</p>";
+
+  try {
+    // IMPORTANT: API route for listing files
+    const res = await fetch("/api/upload/list", { credentials: "include" });
+    if (!res.ok) throw new Error("Failed to load");
+    const files = await res.json();
+
+    grid.innerHTML = "";
+    if (!Array.isArray(files) || files.length === 0) {
+      grid.innerHTML = "<p>No uploads yet.</p>";
+    } else {
+      files.forEach((file) => {
+        const url = "/uploads/" + file; // public URL served by server.js
+        const img = document.createElement("img");
+        img.src = url;
+        img.alt = file;
+        img.title = file;
+        img.style.cssText =
+          "width:100px;height:100px;object-fit:cover;cursor:pointer;border-radius:6px;";
+        img.addEventListener("click", () => {
+          const input = document.getElementById(targetInputId);
+          const prev  = document.getElementById(targetPreviewId);
+          if (input) input.value = url;
+          if (prev)  prev.src = url;
+          closeModal(modal);
+          toast("Image selected");
+        });
+        grid.appendChild(img);
+      });
+    }
+  } catch {
+    grid.innerHTML = "<p>Failed to load uploads</p>";
+  }
+
+  // Close handlers
+  const close = (ev) => {
+    const t = ev.target;
+    if (t?.matches?.("[data-close], .modal-backdrop")) {
+      closeModal(modal);
+      modal.removeEventListener("click", close);
+      window.removeEventListener("keydown", esc);
+    }
+  };
+  const esc = (e) => {
+    if (e.key === "Escape") {
+      closeModal(modal);
+      modal.removeEventListener("click", close);
+      window.removeEventListener("keydown", esc);
+    }
+  };
+  modal.addEventListener("click", close);
+  window.addEventListener("keydown", esc);
+}
+
+// Create form: choose existing
+chooseExistingBtn?.addEventListener("click", () => {
+  // ensure a <img id="preview-img"> exists so picker can update it
+  if (!document.getElementById("preview-img")) {
+    const img = document.createElement("img");
+    img.id = "preview-img";
+    img.alt = "Preview";
+    img.style.cssText = "max-width:160px;border-radius:6px;object-fit:cover";
+    preview.appendChild(img);
+  }
+  openImageChooser("imageUrl", "preview-img");
 });
 
 /* ---------- State ---------- */
@@ -145,8 +237,10 @@ function renderList() {
 function bindEditUploadHandlers(id) {
   const fileInput = document.getElementById(`editFile-${id}`);
   const uploadBtn = document.getElementById(`editUpload-${id}`);
+  const chooseBtn = document.getElementById(`editChoose-${id}`); // NEW
   const urlInput  = document.getElementById(`imgUrl-${id}`);
   const preview   = document.getElementById(`imgPreview-${id}`);
+  const bgToggle  = document.getElementById(`editBg-${id}`); // NEW
   if (!fileInput || !uploadBtn) return;
 
   fileInput.addEventListener("change", () => {
@@ -162,13 +256,25 @@ function bindEditUploadHandlers(id) {
     if (f.size > 5 * 1024 * 1024) return toast("Image must be under 5MB");
 
     try {
-      const { url } = await api.uploadImage(f);
+      const removeBg = !!bgToggle?.checked; // NEW
+      const resp = await api.uploadImage(f, { bg: removeBg }); // { url, bgRemoved? }
+      const { url, bgRemoved } = resp || {};
       urlInput.value = url;
       preview.src = url;
-      toast("Image uploaded");
+      if (removeBg) {
+        toast(bgRemoved ? "Image uploaded (background removed)" : "Image uploaded (kept original background)");
+      } else {
+        toast("Image uploaded");
+      }
     } catch (err) {
       toast(err.message || "Upload failed");
     }
+  });
+
+  // Choose existing (Edit)
+  chooseBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    openImageChooser(`imgUrl-${id}`, `imgPreview-${id}`);
   });
 
   urlInput?.addEventListener("input", () => {
@@ -198,11 +304,9 @@ function openEditor(id) {
     if (saleStr) {
       const saleC = toCents(saleStr);
       if (saleC >= regularC) return toast("Sale price must be lower than regular price");
-      priceC = saleC;
-      oldC   = regularC;
+      priceC = saleC; oldC = regularC;
     } else {
-      priceC = regularC;
-      oldC   = null;
+      priceC = regularC; oldC = null;
     }
 
     const rawCategory = editor.querySelector('[name="category"]').value;
@@ -239,11 +343,9 @@ createForm.addEventListener("submit", async (e) => {
   if (saleStr) {
     const saleC = toCents(saleStr);
     if (saleC >= regularC) return toast("Sale price must be lower than regular price");
-    priceC = saleC;
-    oldC   = regularC;
+    priceC = saleC; oldC = regularC;
   } else {
-    priceC = regularC;
-    oldC   = null;
+    priceC = regularC; oldC = null;
   }
 
   const payload = {

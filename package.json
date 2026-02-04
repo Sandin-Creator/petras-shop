@@ -1,30 +1,17 @@
 {
-  "name": "petras-shop",
-  "version": "1.0.0",
-  "private": true,
-  "engines": {
-    "node": ">=20"
-  },
-  "scripts": {
-    "dev": "node server/server.js",
-    "build": "prisma generate",
-    "start": "node server/server.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev --name init",
-    "migrate:deploy": "prisma migrate deploy",
-    "db:seed": "node prisma/seed.js",
-    "postinstall": "npm run db:seed"
-  },
-  "dependencies": {
-    "@prisma/client": "^5.22.0",
-    "bcryptjs": "^2.4.3",
-    "dotenv": "^16.6.1",
-    "express": "^4.21.2",
-    "express-session": "^1.18.2",
-    "multer": "^2.0.2",
-    "session-file-store": "^1.5.0"
-  },
-  "devDependencies": {
-    "prisma": "^5.22.0"
-  }
+    "name": "petras-shop-monorepo",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+        "client",
+        "server"
+    ],
+    "scripts": {
+        "dev": "concurrently \"npm run dev --workspace=server\" \"npm run dev --workspace=client\"",
+        "build": "npm run build --workspaces",
+        "start": "echo 'Please run dev for development or start server/client separately for production'"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
 }

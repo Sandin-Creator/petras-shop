@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Login · Petras Shop</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/forms-and-filters.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/product.css">
+  <link rel="stylesheet" href="/css/modal.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/utilities.css">
+  <!-- Page-scoped styles -->
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+
+<body class="login-page">
+  <main class="container" role="main">
+    <h1>Admin Login</h1>
+
+    <section class="login-shell" aria-label="Sign in">
+      <form id="loginForm" class="login-grid" autocomplete="on" novalidate aria-describedby="msg">
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="Email"
+                 autocomplete="username" required autofocus />
+        </div>
+
+        <div class="full input-with-button">
+          <div>
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Password"
+                   autocomplete="current-password" required />
+          </div>
+          <button type="button" id="togglePwd" class="btn btn-ghost"
+                  aria-pressed="false" aria-controls="password" aria-label="Show password">
+            Show
+          </button>
+        </div>
+
+
+
+        <div>
+          <button id="submitBtn" type="submit" class="btn btn-accent">Sign in</button>
+        </div>
+
+        <p id="msg" class="price full" role="status" aria-live="polite" aria-atomic="true"></p>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    // Show/Hide password
+    (function () {
+      const pwd = document.getElementById("password");
+      const btn = document.getElementById("togglePwd");
+      btn.addEventListener("click", () => {
+        const showing = pwd.type === "password";
+        pwd.type = showing ? "text" : "password";
+        btn.textContent = showing ? "Hide" : "Show";
+        btn.setAttribute("aria-pressed", String(showing));
+        btn.setAttribute("aria-label", showing ? "Hide password" : "Show password");
+        pwd.focus({ preventScroll: true });
+      });
+    })();
+
+    // Submit with owner code
+    (function () {
+      const form = document.getElementById("loginForm");
+      const msg = document.getElementById("msg");
+      const submitBtn = document.getElementById("submitBtn");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.textContent = "";
+        submitBtn.disabled = true;
+
+        const email = document.getElementById("email").value.trim().toLowerCase();
+        const password = document.getElementById("password").value;
+
+
+        try {
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || !data.ok) throw new Error(data.error || "Invalid credentials");
+          location.href = "/admin";
+        } catch (err) {
+          msg.textContent = err.message || "Login failed";
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("ADMIN") // values: ADMIN, STAFF
+  createdAt    DateTime @default(now())
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  price     Int
+  oldPrice  Int?
+  category  String?   // <-- optional now
+  imageUrl  String?
+  stock     Int      @default(0)
+  hidden    Boolean  @default(false)
+  description String?
+  createdAt DateTime @default(now())
+  orderItems OrderItem[]
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  customerName  String
+  customerEmail String?
+  customerPhone String?
+  status      String      @default("PENDING") // PENDING, READY, COMPLETED, CANCELLED
+  total       Int
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int     // Price at time of order
+}

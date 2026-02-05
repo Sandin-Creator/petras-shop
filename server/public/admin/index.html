@@ -85,9 +85,16 @@
 
         <div class="form-group">
           <label for="imageFile">Upload image</label>
-          <div class="upload-row">
+          <div class="upload-row" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
             <input type="file" id="imageFile" accept="image/*" />
+            <!-- background removal toggle -->
+            <label style="display:inline-flex;align-items:center;gap:6px">
+              <input type="checkbox" id="bgToggleNew" checked>
+              <span>Remove background</span>
+            </label>
             <button type="button" id="uploadBtn" class="btn">Upload</button>
+            <!-- choose an existing image -->
+            <button type="button" id="chooseExistingBtn" class="btn">Choose existing</button>
           </div>
         </div>
 
@@ -153,6 +160,19 @@
   <noscript>
     <div class="container"><p>Please enable JavaScript to use the admin tools.</p></div>
   </noscript>
+
+  <!-- Image Chooser Modal (used by "Choose existing") -->
+  <div id="imageChooser" class="modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-dialog card" role="dialog" aria-modal="true" aria-labelledby="choose-title">
+      <button class="modal-close btn" type="button" data-close aria-label="Close">×</button>
+      <h3 id="choose-title">Choose an Image</h3>
+      <div id="imageChooserGrid"
+           style="display:grid;grid-template-columns:repeat(auto-fill,100px);gap:10px;margin-top:10px;max-height:60vh;overflow:auto;">
+        <!-- Thumbnails injected by JS -->
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script type="module" src="/js/admin/main.js"></script>

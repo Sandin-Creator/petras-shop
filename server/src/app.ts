@@ -65,27 +65,9 @@ app.use(
     })
 );
 
-// Paths
-const publicDir = path.join(__dirname, '..', 'public');
-const adminDir = path.join(publicDir, 'admin');
-
-// Routes
-// Login Page
-app.get('/login', (req: Request, res: Response) => {
-    res.set('X-Robots-Tag', 'noindex, nofollow');
-    // Simple login page serving
-    res.sendFile(path.join(publicDir, 'login.html'));
-});
-
-// Admin Static (Protected)
-app.use('/admin', (req: Request, res: Response, next: NextFunction) => {
-    res.set('X-Robots-Tag', 'noindex, nofollow');
-    next();
-});
-app.use('/admin', requireAdmin, express.static(adminDir));
-app.get('/admin', requireAdmin, (_req: Request, res: Response) => {
-    res.sendFile(path.join(adminDir, 'index.html'));
-});
+// Static Files (Serve React App)
+// In production, we assume the client is built to ../../client/dist relative to dist/server.js
+const clientDist = path.join(__dirname, '../../client/dist');
 
 import ordersRouter from './routes/orders';
 import statsRouter from './routes/stats';
@@ -114,16 +96,23 @@ function ensureWritableDir(preferred: string, fallback: string): string {
 const UPLOAD_DIR = ensureWritableDir(preferredUploads, fallbackUploads);
 app.use('/uploads', express.static(UPLOAD_DIR));
 
-// Public Static
-app.use(express.static(publicDir, { extensions: ['html'] }));
+// Serve React Static Files
+if (fs.existsSync(clientDist)) {
+    app.use(express.static(clientDist));
 
-// Root
-app.get('/', (_req: Request, res: Response) => {
-    res.sendFile(path.join(publicDir, 'index.html'));
-});
+    // SPA Fallback: Serve index.html for any unknown route NOT starting with /api
+    app.get('*', (req: Request, res: Response) => {
+        if (req.path.startsWith('/api')) {
+            return res.status(404).json({ error: 'Not found' });
+        }
+        res.sendFile(path.join(clientDist, 'index.html'));
+    });
+} else {
+    console.warn(`Client dist not found at ${clientDist}. Serving simple API response.`);
+    app.get('/', (req, res) => res.send('API Server Running. Client not built.'));
+}
 
 // Error Handling
-app.use((_req: Request, res: Response) => { res.status(404).json({ error: 'Not found' }) });
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     console.error(err);
     res.status(500).json({ error: 'Server error' });

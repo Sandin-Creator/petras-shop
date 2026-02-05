@@ -114,13 +114,49 @@ export async function updateStatus(req: Request, res: Response) {
             return res.status(400).json({ error: 'Invalid status' });
         }
 
-        const order = await prisma.order.update({
-            where: { id },
-            data: { status }
+        const updateResult = await prisma.$transaction(async (tx) => {
+            const existingOrder = await tx.order.findUnique({
+                where: { id },
+                include: { items: true }
+            });
+
+            if (!existingOrder) {
+                throw new Error("Order not found");
+            }
+
+            // If cancelling, restore stock
+            if (status === 'CANCELLED' && existingOrder.status !== 'CANCELLED') {
+                for (const item of existingOrder.items) {
+                    await tx.product.update({
+                        where: { id: item.productId },
+                        data: { stock: { increment: item.quantity } }
+                    });
+                }
+            }
+
+            // If un-cancelling (e.g. accidental cancel), re-deduct stock
+            if (status !== 'CANCELLED' && existingOrder.status === 'CANCELLED') {
+                for (const item of existingOrder.items) {
+                    await tx.product.update({
+                        where: { id: item.productId },
+                        data: { stock: { decrement: item.quantity } }
+                    });
+                }
+            }
+
+            return tx.order.update({
+                where: { id },
+                data: { status },
+                include: { items: true }
+            });
         });
-        res.json(order);
-    } catch (e) {
+
+        res.json(updateResult);
+    } catch (e: any) {
         console.error(e);
+        if (e.message === "Order not found") {
+            return res.status(404).json({ error: 'Order not found' });
+        }
         res.status(500).json({ error: 'Update failed' });
     }
 }

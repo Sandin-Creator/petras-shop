@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Package, ShoppingCart, LogOut, Loader2, Menu, Bell, BellOff } from 'lucide-react';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 export function AdminLayout() {
     const [loading, setLoading] = useState(true);
@@ -8,6 +9,7 @@ export function AdminLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [notificationsOn, setNotificationsOn] = useState(false);
     const lastCheckedRef = useRef<Date>(new Date());
+    const { subscribeToPush } = usePushNotifications();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -89,6 +91,10 @@ export function AdminLayout() {
                 setNotificationsOn(true);
                 localStorage.setItem('admin_notifications', 'true');
                 lastCheckedRef.current = new Date(); // Start checking from now
+
+                // Advanced: Try to subscribe to Push
+                subscribeToPush();
+
                 new Notification('Notifications Enabled', { body: 'You will be notified of new orders.' });
             } else {
                 alert('Please allow notifications in your browser settings.');

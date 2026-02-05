@@ -71,6 +71,7 @@ const clientDist = path.join(__dirname, '../../client/dist');
 
 import ordersRouter from './routes/orders';
 import statsRouter from './routes/stats';
+import notificationsRouter from './routes/notifications';
 
 // API Routes
 app.use('/api/upload', uploadRouter);
@@ -78,6 +79,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/stats', statsRouter);
+app.use('/api/notifications', notificationsRouter);
 
 // Uploads Directory
 const preferredUploads = process.env.UPLOAD_DIR || path.join(__dirname, '..', 'public', 'uploads');

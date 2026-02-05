@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
 import prisma from '../lib/prisma';
+import { sendPushNotification } from '../config/webPush';
 
 const orderSchema = z.object({
     customerName: z.string().min(1, "Name is required"),
@@ -63,6 +64,16 @@ export async function createOrder(req: Request, res: Response) {
 
             return newOrder;
         });
+
+
+
+        // Trigger Push Notification (Fire and forget)
+        const totalFormatted = (Number(order.total) / 100).toFixed(2);
+        sendPushNotification(
+            'New Order!',
+            `Order #${order.id} from ${order.customerName}. Total: €${totalFormatted}`,
+            '/admin/orders'
+        ).catch(err => console.error('Push trigger error', err));
 
         return res.status(201).json(order);
 
